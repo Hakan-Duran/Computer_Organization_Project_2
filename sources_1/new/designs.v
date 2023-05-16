@@ -1,9 +1,5 @@
 `timescale 1ns / 1ps
 
-
-
-`timescale 1ns / 1ps
-
 module register #(parameter N=2)(clk, enable, funsel, load, Q_out);
 input clk;
 input enable;
@@ -555,6 +551,18 @@ module ALU_System (
 
     twoToOneMuxOf8bits muxC(MuxCSel, AOut, ARF_AOut, MuxCOut);
     alu ALU(MuxCOut,BOut,ALU_FunSel,ALUOutFlag,ALUOut); 
+
+
+endmodule
+
+//before this section was in project 1
+
+
+module Control_Unit (
+    //inputs are currently unkown, nothing known for the input
+);
+    
+
 
 
 endmodule
