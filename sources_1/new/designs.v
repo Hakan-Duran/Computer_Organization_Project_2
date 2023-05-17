@@ -557,10 +557,30 @@ endmodule
 
 //before this section was in project 1
 
+module Counter(input wire inc, input wire dec, input wire reset, output reg [3:0] register_counter);
+always @(*) begin
+    if (in) begin
+    register_counter=register_counter+3'b001;
+    end
+    else if (dec) begin
+    register_counter=register_counter-3'b001;
+    end
+    else if (reset) begin
+    register_counter=3'b000;
+    end
 
-module Control_Unit (
-    //inputs are currently unkown, nothing known for the input
-);
+end
+
+endmodule
+
+
+
+module Control_Unit ();
+
+    Counter counter(0,0,1);
+
+
+
     
 
 
