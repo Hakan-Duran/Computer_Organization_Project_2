@@ -675,7 +675,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
             ARF_RegSel <=4'b1001; //open AR and PC
         end
         else if (timing_signal==3'b010)begin //3rd and last phase of the fetch cycle
-            //IR(15-8)<-M[AR]+ PC<-PC+1
+            //IR(15-8)<-M[AR],  PC<-PC+1
             ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
             Mem_WR<=0;    //read from memory
             IR_Enable<=1; //activate IR
