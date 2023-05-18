@@ -155,7 +155,10 @@ module arf (
    output [7:0] outa;
    output [7:0] outb;
 
-   wire [7:0] w0, w1, w2, w3;
+   wire [7:0] w0, w1, w2, w3; 
+    //rsel 4 bits: 1   1   1       1
+    //             AR  SP  PCPrev  PC
+
 
    register#(8) ar (.clk(clk), .enable(rsel[3]), .funsel(funsel), .load(load), .Q_out(w0)) ; 
    register#(8) sp (.clk(clk), .enable(rsel[2]), .funsel(funsel), .load(load), .Q_out(w1)) ; 
@@ -437,7 +440,7 @@ endmodule
 module Memory(
     input wire[7:0] address,
     input wire[7:0] data,
-    input wire wr, //Read = 0, Write = 1
+    input wire wr, //Read = 0, Write = 1  //read from memory, write to memory 
     input wire cs, //Chip is enable when cs = 0
     input wire clock,
     output reg[7:0] o // Output
@@ -557,31 +560,139 @@ endmodule
 
 //before this section was in project 1
 
-module Counter(input wire inc, input wire dec, input wire reset, output reg [3:0] register_counter);
-always @(*) begin
-    if (in) begin
-    register_counter=register_counter+3'b001;
-    end
-    else if (dec) begin
-    register_counter=register_counter-3'b001;
-    end
-    else if (reset) begin
-    register_counter=3'b000;
+
+
+
+
+module Counter(input wire clock, input wire reset, output reg [2:0] register_counter);
+    always @(posedge clock) begin
+    register_counter<=register_counter+3'b001;
     end
 
-end
+    always@(*) begin
+        if (reset) register_counter=3'b000;
+    end
 
 endmodule
 
 
 
-module Control_Unit ();
+module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);//don't forget to reset counter at the begining and return back to normal condition!!!!
+    reg reset_timing_signal; 
+    wire [2:0] timing_signal;
+    Counter counter(clock, (reset_timing_signal | reset_timing),timing_signal);
 
-    Counter counter(0,0,1);
 
-
-
+    //wires for ALU_system
+    //input wires
+    reg [1:0] ARF_OutCSel;    //ARF_OutASel 
+    reg[1:0] ARF_OutDSel;     //ARF_OutBSel
+    reg [1:0] IR_Funsel;
+    reg [1:0] ARF_FunSel;
+    reg [1:0] RF_FunSel;
+    reg [3:0] ALU_FunSel;
+    reg [3:0] RF_RSel;
+    reg [3:0] ARF_RegSel;
+    // rsel   places: 3   2   1       0
+    // values 4 bits: 1   1   1       1
+    //                AR  SP  PCPrev  PC
     
+    wire Clock;
+    reg Mem_WR;
+    reg Mem_CS;
+    reg IR_Enable;
+    reg IR_LH;//0=> (7-0), 1=> (15-8)
+    reg [1:0] MuxASel;
+    reg [1:0] MuxBSel;
+    reg MuxCSel;
+    reg [2:0] RF_OutASel;
+    reg [2:0] RF_OutBSel;
+    reg [3:0] RF_TSel;
+    //end of input wires
+
+   //output wires
+    wire [7:0] AOut;//rf-muxC
+    wire [7:0] BOut;//rf-alu
+    wire [7:0] ALUOut;
+    wire [3:0] ALUOutFlag;
+    wire [7:0] ARF_AOut;//arf -muxA
+    wire [7:0] Address;//arf- memory adress
+    wire [7:0] MemoryOut; //memory - IR- muxA
+    wire [7:0] MuxAOut; //muxA- rf
+    wire [7:0] MuxBOut;//muxB-arf
+    wire [7:0] MuxCOut;//muxC-alu
+    wire [15:0] IROut; //direct IR output
+    //end of output wires
+    //end of wires for ALU_system
+
+
+
+
+    ALU_System sys(ARF_OutCSel,ARF_OutDSel,IR_Funsel,ARF_FunSel,RF_FunSel,ALU_FunSel,RF_RSel,
+    ARF_RegSel,Clock,Mem_WR,Mem_CS,IR_Enable,IR_LH,MuxASel,MuxBSel,MuxCSel,RF_OutASel, RF_OutBSel,
+     RF_TSel,AOut, BOut, ALUOut, ALUOutFlag, ARF_AOut, Address, MemoryOut,  MuxAOut,  MuxBOut, MuxCOut,IROut 
+    );
+
+
+
+
+
+
+
+
+    //operations
+    always @(posedge clock) begin
+        //********************************************************************************************************
+        //DO NOT FORGET TO REMOVE SPECIFCATIONS (LIKE MAKE regsel=0, OR CLOSE WRITING TO MEMORY) FROM MEMORY AND REGISTERS AT THE END,
+        //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESARY CONTENT
+        ARF_RegSel=4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
+        reset_timing_signal=0;//be sure that timing signal doesn't reset in every cycle
+        IR_Enable=0; 
+
+
+
+        //opcode and timing signal condtions
+        //don't forget to count from 0
+        if(timing_signal==3'b000) begin //start of the fetch cycle AR<-PC
+            //PC->OutA->MUXC->ALU->MUXB->AR
+            ARF_OutCSel<=2'b 11; //outA will be PC
+            MuxCSel<=0;//muxC will give outA
+            ALU_FunSel<=4'b0000; //ALU will give muxCout as output
+            Mem_WR<=0;    //making sure memory is not writing ALU's output
+            MuxBSel<=2'b00; //output of the alu will be output of mux b
+            ARF_RegSel<=4'b1000;  //select AR
+            ARF_FunSel<=2'b 01;  //open load
+        end
+        else if(timing_signal==3'b001) begin //2nd phase of fetch cycle
+            // IR(7-0)<-M[AR], PC<-PC+1, AR<-AR+1 (AR also increased to feed remaning part of the IR in the next cycle)
+            ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
+            Mem_WR<=0;    //read from memory
+            IR_Enable<=1; //activate IR
+            IR_Funsel<=2'b 01; //open load
+            IR_LH<=0;  //IR(7-0) selected
+            
+            ARF_FunSel<=2'b11; //increment by 1
+            ARF_RegSel <=4'b1001; //open AR and PC
+        end
+        else if (timing_signal==3'b010)begin //3rd and last phase of the fetch cycle
+            //IR(15-8)<-M[AR]
+            ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
+            Mem_WR<=0;    //read from memory
+            IR_Enable<=1; //activate IR
+            IR_Funsel<=2'b 01; //open load
+            IR_LH<=1;  //IR(15-8) selected
+        end
+        //IR is ready to use
+
+
+
+
+    end
+
+
+  
+           
+
 
 
 
