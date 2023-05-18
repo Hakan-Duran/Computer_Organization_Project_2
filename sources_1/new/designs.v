@@ -641,15 +641,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
 
     //operations
-    always @(posedge clock) begin
-        //********************************************************************************************************
-        //DO NOT FORGET TO REMOVE SPECIFCATIONS (LIKE MAKE regsel=0, OR CLOSE WRITING TO MEMORY) FROM MEMORY AND REGISTERS AT THE END,
-        //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESARY CONTENT
-        ARF_RegSel=4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
-        reset_timing_signal=0;//be sure that timing signal doesn't reset in every cycle
-        IR_Enable=0; 
-
-
+    always @(*) begin  //registers have internal clock mechanisms, don't implement yours
 
         //opcode and timing signal condtions
         //don't forget to count from 0
@@ -690,13 +682,17 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
 
 
-    end
+        //********************************************************************************************************
+        //DO NOT FORGET TO REMOVE SPECIFCATIONS (LIKE MAKE regsel=0, OR CLOSE WRITING TO MEMORY) FROM MEMORY AND REGISTERS AT THE END,
+        //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESSARY CONTENT
 
-
+        if (1)begin     
+            ARF_RegSel<=4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
+            reset_timing_signal<=0;//be sure that timing signal doesn't reset in every cycle
+            IR_Enable<=0; 
+        end
   
-           
 
-
-
+    end
 
 endmodule
