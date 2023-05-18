@@ -681,6 +681,9 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
             IR_Enable<=1; //activate IR
             IR_Funsel<=2'b 01; //open load
             IR_LH<=1;  //IR(15-8) selected
+            ARF_FunSel<=2'b11; //increment by 1
+            ARF_RegSel <=4'b0001; //open PC
+
         end
         //IR is ready to use
 
