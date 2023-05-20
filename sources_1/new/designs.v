@@ -802,26 +802,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     ARF_RegSel <=4'b1001; //open AR and PC
                 end
                 end
-                else if(ins_opcode==4'h0C && timing_signal==3'b100) begin
-                    if(ins_addressing_mode==1'b1) begin 
-                    MuxASel<=2'b10; //selects IROut
-                    RF_FunSel<= 2'b01; //open load for RF
-                    case (ins_rsel)
-                    2'b00: begin
-                    RF_RSel<=4'b1000;   //R1 is chosen
-                    end
-                    2'b01: begin
-                    RF_RSel<=4'b0100;   //R2 is chosen
-                    end
-                    2'b10: begin
-                    RF_RSel<=4'b0010;   //R3 is chosen
-                    end
-                    2'b11: begin
-                    RF_RSel<=4'b0001;   //R4 is chosen
-                    end
-                    endcase
-                end        
-                end
+
                 else if(ins_opcode==4'h0D) begin
                     case (ins_rsel)
                     2'b00: begin
@@ -971,7 +952,27 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     ARF_RegSel <= 3'b000; //Do not let ARF to change.
 
                 end
-
+                /* Second step of direct addressing */
+                else if(ins_opcode==4'h0C && timing_signal==3'b100) begin
+                    if(ins_addressing_mode==1'b1) begin 
+                    MuxASel<=2'b10; //selects IROut
+                    RF_FunSel<= 2'b01; //open load for RF
+                    case (ins_rsel)
+                    2'b00: begin
+                    RF_RSel<=4'b1000;   //R1 is chosen
+                    end
+                    2'b01: begin
+                    RF_RSel<=4'b0100;   //R2 is chosen
+                    end
+                    2'b10: begin
+                    RF_RSel<=4'b0010;   //R3 is chosen
+                    end
+                    2'b11: begin
+                    RF_RSel<=4'b0001;   //R4 is chosen
+                    end
+                    endcase
+                end        
+                end
             else 
                 begin//write to arf 
                     
