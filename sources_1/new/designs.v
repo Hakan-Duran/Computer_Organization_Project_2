@@ -577,6 +577,8 @@ endmodule
 
 
 
+
+
 module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);//don't forget to reset counter at the begining and return back to normal condition!!!!
     reg reset_timing_signal; 
     wire [2:0] timing_signal;
@@ -625,6 +627,18 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
     //end of output wires
     //end of wires for ALU_system
 
+    wire[3:0] ins_opcode= IROut[15:12];
+
+    //figure 2 mode: (if adressing mode is N/A from the table)
+    wire[3:0] ins_dstreg = IROut[11:8];
+    wire [3:0] ins_sreg1= IROut[7:4];
+    wire [3:0] ins_sreg2= IROut[3:0];
+
+    //figure 1 mode: (if adressing mode is IM, D in the table)
+
+    wire ins_addressing_mode =IROut[10];
+    wire [1:0] ins_rsel= IROut[9:8];
+    wire [7:0] ins_adress= IROut[7:0];
 
 
 
@@ -633,7 +647,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
      RF_TSel,AOut, BOut, ALUOut, ALUOutFlag, ARF_AOut, Address, MemoryOut,  MuxAOut,  MuxBOut, MuxCOut,IROut 
     );
 
-
+      
 
 
 
@@ -681,15 +695,111 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
 
 
+        //register selections for output 
+        else if(timing_signal==3'b011)begin
+  
+            //there is 3 situation for input. Both can be in RF, one form RF one from ARF, both can be in ARF
+            case({ins_sreg1[2],ins_sreg2[2]})
+
+                2'b00: //both are in RF 
+                    begin
+                        MuxCSel<=1; //RF's output
+                        RF_OutASel<={1'b1,ins_sreg1[1:0]};//RF output selection
+                        RF_OutBSel<={1'b1,ins_sreg2[1:0]};//RF output selection
+                    end
+                2'b10: //1st ARF, 2nd RF
+                    begin
+                    MuxCSel<=0;   //ARF's output
+                    RF_OutBSel<={1'b1,ins_sreg2[1:0]};//RF output selection
+                    
+                    case (ins_sreg1[1:0])//ARF output selection
+                        2'b00:  //SP selection
+                            ARF_OutCSel<= 2'b01;
+                        2'b01: //AR selection
+                            ARF_OutCSel<= 2'b00;
+                        2'b10://PC selection
+                            ARF_OutCSel<=2'b11;
+                        2'b11://PC selection
+                            ARF_OutCSel<=2'b11;
+                    endcase 
+                    end 
+
+                2'b01: //1st RF, 2nd ARF (1 more cycle needed)
+                    begin//store value of ARF in T1
+
+                        case (ins_sreg2[1:0])//ARF output selection
+                            2'b00:  //SP selection
+                                ARF_OutCSel<= 2'b01;
+                            2'b01: //AR selection
+                                ARF_OutCSel<= 2'b00;
+                            2'b10://PC selection
+                                ARF_OutCSel<=2'b11;
+                            2'b11://PC selection
+                                ARF_OutCSel<=2'b11;
+                        endcase
+
+                        MuxASel<=2'b11; //output coming from ARF
+                        RF_TSel<=4'b1000; //T1 will be used to store value coming from ARF
+                        RF_FunSel<= 2'b01; //open load
+                    end
+                2'b11: //both are ARF (1 more cycle needed)
+                    begin //store value of ARF in T1 (for ALU input B)
+                        case (ins_sreg2[1:0])//ARF output selection
+                            2'b00:  //SP selection
+                                ARF_OutCSel<= 2'b01;
+                            2'b01: //AR selection
+                                ARF_OutCSel<= 2'b00;
+                            2'b10://PC selection
+                                ARF_OutCSel<=2'b11;
+                            2'b11://PC selection
+                                ARF_OutCSel<=2'b11;
+                        endcase
+
+                        MuxASel<=2'b11; //output coming from ARF
+                        RF_TSel<=4'b1000; //T1 will be used to store value coming from ARF
+                        RF_FunSel<= 2'b01; //open load
+                    end
+            endcase
+
+                
+
+        end
+        else if((timing_signal==3'b100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b01 ))begin  //next cycle of 1st RF, 2nd ARF
+            RF_OutBSel<=3'b000;//T1 will be 2nd output 
+            MuxCSel<=1; //Rx RF's output
+            RF_OutASel<= {1'b1,ins_sreg1[1:0]};//Rx selection
+        end
+        else if((timing_signal==3'b100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b11 ))begin  //next cycle of both are ARF
+            
+            MuxCSel<=0;   //ARF's output for ALU A (sreg 1)
+
+            case (ins_sreg1[1:0])//ARF output selection for sreg1
+                2'b00:  //SP selection
+                    ARF_OutCSel<= 2'b01;
+                2'b01: //AR selection
+                    ARF_OutCSel<= 2'b00;
+                2'b10://PC selection
+                    ARF_OutCSel<=2'b11;
+                2'b11://PC selection
+                    ARF_OutCSel<=2'b11;
+            endcase 
+            RF_OutBSel<=3'b000; //T1 will be 2nd output (sreg 2)
+        
+        
+        end
+
+
+
 
         //********************************************************************************************************
         //DO NOT FORGET TO REMOVE SPECIFCATIONS (LIKE MAKE regsel=0, OR CLOSE WRITING TO MEMORY) FROM MEMORY AND REGISTERS AT THE END,
         //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESSARY CONTENT
 
-        if (1)begin     
+        if (1)begin     //place will be reconsidered !!!!!!!!!!
             ARF_RegSel<=4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
             reset_timing_signal<=0;//be sure that timing signal doesn't reset in every cycle
             IR_Enable<=0; 
+            RF_TSel<=4'b0000;//making sure RF_TSel deactiveted for unintended writings
         end
   
 
