@@ -701,38 +701,38 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
         //opcode and timing signal condtions
         //don't forget to count from 0
-        if(timing_signal==3'b000) begin //start of the fetch cycle AR<-PC
-            //PC->OutA->MUXC->ALU->MUXB->AR
-            ARF_OutCSel<=2'b 11; //outA will be PC
-            MuxCSel<=0;//muxC will give outA
-            ALU_FunSel<=4'b0000; //ALU will give muxCout as output
-            Mem_WR<=0;    //making sure memory is not writing ALU's output
-            MuxBSel<=2'b00; //output of the alu will be output of mux b
-            ARF_RegSel<=4'b1000;  //select AR
-            ARF_FunSel<=2'b 01;  //open load
-        end
-        else if(timing_signal==3'b001) begin //2nd phase of fetch cycle
-            // IR(7-0)<-M[AR], PC<-PC+1, AR<-AR+1 (AR also increased to feed remaning part of the IR in the next cycle)
-            ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
+        if(timing_signal==3'b000) begin //start of the fetch cycle 
+            //IR(7-0)<-M[PC]
+            ARF_OutDSel<=2'b 11; //PC will be given as adress to memory
             Mem_WR<=0;    //read from memory
             IR_Enable<=1; //activate IR
             IR_Funsel<=2'b 01; //open load
             IR_LH<=0;  //IR(7-0) selected
             
-            ARF_FunSel<=2'b11; //increment by 1
-            ARF_RegSel <=4'b1001; //open AR and PC
+
+
         end
-        else if (timing_signal==3'b010)begin //3rd and last phase of the fetch cycle
-            //IR(15-8)<-M[AR],  PC<-PC+1
-            ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
+        else if(timing_signal==3'b001) begin //2nd phase of fetch cycle
+            //IR(15-8)<-M[PC],  PC<-PC+1
+            ARF_FunSel<=2'b11; //increment by 1
+            ARF_RegSel <=4'b0001; //open PC
+           
+            ARF_OutDSel<=2'b 11; //PC will be given as adress to memory
             Mem_WR<=0;    //read from memory
             IR_Enable<=1; //activate IR
             IR_Funsel<=2'b 01; //open load
             IR_LH<=1;  //IR(15-8) selected
-            ARF_FunSel<=2'b11; //increment by 1
-            ARF_RegSel <=4'b0001; //open PC
+           
+            
 
         end
+        else if (timing_signal==3'b010)begin //3rd and last phase of the fetch cycle
+            //PC<-PC+1
+
+            ARF_FunSel<=2'b11; //increment by 1
+            ARF_RegSel <=4'b0001; //open PC
+         end
+         
         //IR is ready to use
 
         //register selections for output 
