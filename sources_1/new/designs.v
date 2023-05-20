@@ -746,9 +746,14 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                 //in here AR<-IR(7-0) operation made
                 //also rsel selection in here also depends on the state (being input or output), so they will also be considered in opcodes
 
-                MuxBSel<=2'b10; //IR(7-0) will go to ARF
-                ARF_RegSel<=4'b1000; // select only AR
-                ARF_FunSel<=2'b01; //load 
+
+                //NORMALLY This operations should be done as below prevously, but depending on the operation of these 4 opcode, 
+                //AR value may not be needed to be updated, so you will do it on the opcodes   EMRE************************* 
+
+
+                // MuxBSel<=2'b10; //IR(7-0) will go to ARF
+                // ARF_RegSel<=4'b1000; // select only AR
+                // ARF_FunSel<=2'b01; //load 
 
              end
 
