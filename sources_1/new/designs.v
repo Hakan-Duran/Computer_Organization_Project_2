@@ -648,11 +648,52 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
     );
 
       
+    // ********** This statments will be used later for output 
+        // begin
+        //     if (ins_dstreg[2]==1'b0)//write to rf
+        //     begin 
+        //         case (ins_dstreg[1:0]) //which register will be used
+        //             2'b00: //R1
+        //                 RF_RSel<= 4'b1000;
+            
+        //             2'b01: //R2
+        //                 RF_RSel<= 4'b0100;
+
+        //             2'b10: //R3
+        //                 RF_RSel<= 4'b0010;
+
+        //             2'b11: //R4
+        //                 RF_RSel<= 4'b0001;
+                    
+        //         endcase
+        //         RF_FunSel=2'b01; //open to load
+
+        //     end
+        //     else begin//write to arf 
+                    
+        //         case (ins_dstreg[1:0]) //which register will be used
+        //             2'b00: //SP
+        //                 ARF_RegSel<= 4'b0100;
+            
+        //             2'b01: //AR
+        //                 ARF_RegSel<= 4'b1000;
+
+        //             2'b10: //PC
+        //                 ARF_RegSel<= 4'b0001;
+
+        //             2'b11: //PC
+        //                 ARF_RegSel<= 4'b0001;
+                    
+        //         endcase
+        //         ARF_FunSel=2'b01; //open to load
+
+        //      end 
+        
+        // end
 
 
 
-
-
+ 
 
     //operations
     always @(*) begin  //registers have internal clock mechanisms, don't implement yours
@@ -692,8 +733,6 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
         end
         //IR is ready to use
-
-
 
         //register selections for output 
         else if(timing_signal==3'b011)begin
@@ -758,10 +797,11 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                         MuxASel<=2'b11; //output coming from ARF
                         RF_TSel<=4'b1000; //T1 will be used to store value coming from ARF
                         RF_FunSel<= 2'b01; //open load
-                    end
+                     end
             endcase
 
-                
+
+          
 
         end
         else if((timing_signal==3'b100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b01 ))begin  //next cycle of 1st RF, 2nd ARF
