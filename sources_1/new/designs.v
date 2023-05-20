@@ -791,6 +791,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                 else begin //direct addressing
                     ARF_FunSel<=2'b01; // open load
                     MuxBSel <= 2'b10; //IROut is selected
+                    ARF_RegSel<=4'b1000;  //select AR
                     // copied to code from fetch here
                     ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
                     Mem_WR<=0;    //read from memory
