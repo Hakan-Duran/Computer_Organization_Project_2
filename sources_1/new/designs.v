@@ -828,6 +828,696 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
         
         end
 
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h0)) begin // AND
+            ALU_FunSel <= 4'b0111 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h1)) begin // OR
+            ALU_FunSel <= 4'b1000 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h2)) begin // NOT
+            ALU_FunSel <= 4'b0010 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h3)) begin // ADD
+
+            ALU_FunSel <= 4'b0100 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h4)) begin // SUB
+            ALU_FunSel <= 4'b0101 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h5)) begin // LSR
+            ALU_FunSel <= 4'b1100 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h6)) begin // LSL
+
+            ALU_FunSel <= 4'b1011 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h7)) begin // INC (takes 2 cycle) 1. cycle
+
+            ALU_FunSel <= 4'b0000 ; //SREG1 directly goes to DSREG.
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+            
+
+        end
+
+
+        else if((timing_signal==3'b110) && (ins_opcode == 4'h7)) begin // INC (takes 2 cycle) 2. cycle
+        
+        if (ins_dstreg[2]==1'b0)//increment in RF
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b11; //inc
+
+                end
+
+            else 
+                begin//increment in ARF
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b11; //inc
+
+                end 
+
+        reset_timing_signal <= 1'b1; //counter has zeroed.
+
+        end
+
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'h8)) begin // DEC (takes 2 cycle) 1. cycle
+
+            ALU_FunSel <= 4'b0000 ; //SREG1 directly goes to DSREG.
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+            
+
+        end
+
+
+        else if((timing_signal==3'b110) && (ins_opcode == 4'h8)) begin // DEC (takes 2 cycle) 2. cycle
+        
+        if (ins_dstreg[2]==1'b0)//decrement in RF
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b10; //dec
+
+                end
+
+            else 
+                begin//decrement in ARF
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b10; //dec
+
+                end 
+
+        reset_timing_signal <= 1'b1; //counter has zeroed.
+
+        end
+
+        else if((timing_signal==3'b101) && (ins_opcode == 4'hB)) begin // MOV
+        
+            ALU_FunSel <= 4'b0000 ;
+            Mem_WR <= 0;
+
+            begin // write to register
+
+            if (ins_dstreg[2]==1'b0)//write to rf
+                begin 
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //R1
+                            RF_RSel<= 4'b1000;
+                
+                        2'b01: //R2
+                            RF_RSel<= 4'b0100;
+
+                        2'b10: //R3
+                            RF_RSel<= 4'b0010;
+
+                        2'b11: //R4
+                            RF_RSel<= 4'b0001;
+                        
+                    endcase
+                    RF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b00; //OutALU
+                    MuxBSel <= 2'b10; //IROut (random)
+                    ARF_RegSel <= 3'b000; //Do not let ARF to change.
+
+                end
+
+            else 
+                begin//write to arf 
+                    
+                    case (ins_dstreg[1:0]) //which register will be used
+                        2'b00: //SP
+                            ARF_RegSel<= 4'b0100;
+                
+                        2'b01: //AR
+                            ARF_RegSel<= 4'b1000;
+
+                        2'b10: //PC
+                            ARF_RegSel<= 4'b0001;
+
+                        2'b11: //PC
+                            ARF_RegSel<= 4'b0001;
+                        
+                    endcase
+                    ARF_FunSel<=2'b01; //open to load
+                    MuxASel <= 2'b10; //IROut (random)
+                    MuxBSel <= 2'b00; //OutALU
+                    RF_RSel <= 3'b000; //Do not let RF to change.
+
+                end 
+        
+            end
+
+        reset_timing_signal <= 1'b1; //counter has zeroed.
+
+        end
 
 
 
