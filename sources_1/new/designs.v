@@ -552,7 +552,7 @@ module ALU_System (
 
     reg8_8 Register_File(Clock, MuxAOut, RF_OutASel, RF_OutBSel, RF_FunSel, RF_RSel, RF_TSel, AOut, BOut);
 
-    twoToOneMuxOf8bits muxC(MuxCSel, AOut, ARF_AOut, MuxCOut);
+    twoToOneMuxOf8bits muxC(MuxCSel, AOut, ARF_AOut, MuxCOut); //0=> AOut, 1=> ARF_AOut
     alu ALU(MuxCOut,BOut,ALU_FunSel,ALUOutFlag,ALUOut); 
 
 
@@ -606,7 +606,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
     reg IR_LH;//0=> (7-0), 1=> (15-8)
     reg [1:0] MuxASel;
     reg [1:0] MuxBSel;
-    reg MuxCSel;
+    reg MuxCSel; //0=> AOut(RF), 1=> ARF_AOut
     reg [2:0] RF_OutASel;
     reg [2:0] RF_OutBSel;
     reg [3:0] RF_TSel;
@@ -711,7 +711,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
             
 
 
-        end
+         end
         else if(timing_signal==3'b001) begin //2nd phase of fetch cycle
             //IR(15-8)<-M[PC],  PC<-PC+1
             ARF_FunSel<=2'b11; //increment by 1
@@ -725,7 +725,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
            
             
 
-        end
+         end
         else if (timing_signal==3'b010)begin //3rd and last phase of the fetch cycle
             //PC<-PC+1
 
@@ -765,13 +765,14 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
                     2'b00: //both are in RF 
                         begin
-                            MuxCSel<=1; //RF's output
+                            //0=> AOut, 1=> ARF_AOut
+                            MuxCSel<=0; //RF's output
                             RF_OutASel<={1'b1,ins_sreg1[1:0]};//RF output selection
                             RF_OutBSel<={1'b1,ins_sreg2[1:0]};//RF output selection
                         end
                     2'b10: //1st ARF, 2nd RF
                         begin
-                        MuxCSel<=0;   //ARF's output
+                        MuxCSel<=1;   //ARF's output
                         RF_OutBSel<={1'b1,ins_sreg2[1:0]};//RF output selection
                         
                         case (ins_sreg1[1:0])//ARF output selection
@@ -829,14 +830,14 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
          end
         else if((timing_signal==3'b100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b01 )  && 
                  !(  (ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD)  )  )begin  //next cycle of 1st RF, 2nd ARF
-            RF_OutBSel<=3'b000;//T1 will be 2nd output 
-            MuxCSel<=1; //Rx RF's output
+            RF_OutBSel<=3'b000; //T1 will be 2nd output 
+            MuxCSel<=0; //Rx RF's output
             RF_OutASel<= {1'b1,ins_sreg1[1:0]};//Rx selection
         end
         else if((timing_signal==3'b100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b11 ) &&
                   !(  (ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD)  ))begin  //next cycle of both are ARF
             
-            MuxCSel<=0;   //ARF's output for ALU A (sreg 1)
+            MuxCSel<=1;   //ARF's output for ALU A (sreg 1)
 
             case (ins_sreg1[1:0])//ARF output selection for sreg1
                 2'b00:  //SP selection
