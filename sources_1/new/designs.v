@@ -1619,7 +1619,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                 end        
                 end
 
-                else if(ins_opcode==4'h0D && timing_signal==3'b101) begin
+                else if(ins_opcode==4'h0D && timing_signal==3'b100) begin
                     case (ins_rsel)
                     2'b00: begin
                     RF_RSel<=4'b1000;   //R1 is chosen
