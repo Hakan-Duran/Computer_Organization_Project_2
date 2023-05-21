@@ -110,3 +110,51 @@ endmodule
 //end of project 1 test
 
 
+module project2Test ();
+
+//inputs
+    reg clock;
+    // reg reset_timing;
+    
+//outputs of the registers
+    wire [7:0] AOut;
+    wire [7:0] BOut;
+    wire [7:0] ALUOut;
+    wire [3:0] ALUOutFlag;
+    wire [7:0] ARF_AOut;
+    wire [7:0] Address;
+    wire [7:0] MemoryOut;
+    wire [7:0] MuxAOut;
+    wire [7:0] MuxBOut;
+    wire [7:0] MuxCOut;
+    wire [15:0] IROut;
+
+
+
+Control_Unit_Combined_With_ALU_System uut(
+    clock, /*reset_timing,*/ 
+    // output wires
+    AOut,
+    BOut,
+    ALUOut,
+    ALUOutFlag,
+    ARF_AOut,
+    Address,
+    MemoryOut,
+    MuxAOut,
+    MuxBOut,
+    MuxCOut,
+    IROut
+);
+
+initial begin
+    clock=0;
+end
+
+always #2 clock=~clock; 
+
+
+
+
+    
+endmodule

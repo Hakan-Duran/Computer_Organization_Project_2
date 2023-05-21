@@ -579,10 +579,27 @@ endmodule
 
 
 
-module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);//don't forget to reset counter at the begining and return back to normal condition!!!!
+module Control_Unit_Combined_With_ALU_System (input clock, /*input reset_timing,*/ 
+
+
+    // output wires for control purposes
+    output wire [7:0] AOut,
+    output wire [7:0] BOut,
+    output wire [7:0] ALUOut,
+    output wire [3:0] ALUOutFlag,
+    output wire [7:0] ARF_AOut,
+    output wire [7:0] Address,
+    output wire [7:0] MemoryOut,
+    output wire [7:0] MuxAOut,
+    output wire [7:0] MuxBOut,
+    output wire [7:0] MuxCOut,
+    output wire [15:0] IROut
+
+
+);//don't forget to reset counter at the begining and return back to normal condition!!!!
     reg reset_timing_signal; 
     wire [2:0] timing_signal;
-    Counter counter(clock, (reset_timing_signal | reset_timing),timing_signal);
+    Counter counter(clock, (reset_timing_signal /*| reset_timing*/),timing_signal);
 
 
     //wires for ALU_system
@@ -612,20 +629,27 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
     reg [3:0] RF_TSel;
     //end of input wires
 
-   //output wires
-    wire [7:0] AOut;//rf-muxC
-    wire [7:0] BOut;//rf-alu
-    wire [7:0] ALUOut;
-    wire [3:0] ALUOutFlag;
-    wire [7:0] ARF_AOut;//arf -muxA
-    wire [7:0] Address;//arf- memory adress
-    wire [7:0] MemoryOut; //memory - IR- muxA
-    wire [7:0] MuxAOut; //muxA- rf
-    wire [7:0] MuxBOut;//muxB-arf
-    wire [7:0] MuxCOut;//muxC-alu
-    wire [15:0] IROut; //direct IR output
-    //end of output wires
-    //end of wires for ALU_system
+
+
+
+//    //output wires
+//     wire [7:0] AOut;//rf-muxC
+//     wire [7:0] BOut;//rf-alu
+//     wire [7:0] ALUOut;
+//     wire [3:0] ALUOutFlag;
+//     wire [7:0] ARF_AOut;//arf -muxA
+//     wire [7:0] Address;//arf- memory adress
+//     wire [7:0] MemoryOut; //memory - IR- muxA
+//     wire [7:0] MuxAOut; //muxA- rf
+//     wire [7:0] MuxBOut;//muxB-arf
+//     wire [7:0] MuxCOut;//muxC-alu
+//     wire [15:0] IROut; //direct IR output
+//     //end of output wires
+//     //end of wires for ALU_system
+
+
+
+
 
     wire[3:0] ins_opcode= IROut[15:12];
 
@@ -692,6 +716,24 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
         
         // end
 
+
+    //make everything 0
+    initial begin
+        Mem_WR<=0;
+        
+        ARF_FunSel<=2'b00;
+        RF_FunSel<=2'b00;
+        RF_RSel<=4'b1111;
+        ARF_RegSel<=4'b1111;
+        RF_TSel<=4'b1111;
+        reset_timing_signal<=1;
+        #5;
+        RF_RSel<=4'b0000;
+        ARF_RegSel<=4'b0000;
+        RF_TSel<=4'b0000;
+        reset_timing_signal<=0;
+
+     end
 
 
  
@@ -1552,12 +1594,14 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
         //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESSARY CONTENT
 
         if (1)begin     //place will be reconsidered !!!!!!!!!!
+
             
             ARF_RegSel<= #2 4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
             reset_timing_signal<= #2 0;//be sure that timing signal doesn't reset in every cycle
             IR_Enable<= #2 0; 
             RF_RSel<= #2 4'b0000;
             RF_TSel<= #2 4'b0000;//making sure RF_TSel deactiveted for unintended writings
+
         end
   
 
