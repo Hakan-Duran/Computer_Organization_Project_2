@@ -794,8 +794,8 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                 else begin //direct addressing
                     ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
                     Mem_WR<=0;    //read from memory
-                    MuxASel<=2'b01 // selects memory output in MUX A
-                    RF_FunSel<= 2'b01; //open load for RF
+                    MuxASel<=2'b01; // selects memory output in MUX A
+                    RF_FunSel<=2'b01; //open load for RF
                     case (ins_rsel)
                     2'b00: begin
                     RF_RSel<=4'b1000;   //R1 is chosen
