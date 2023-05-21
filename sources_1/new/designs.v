@@ -566,7 +566,7 @@ endmodule
 
 module Counter(input wire clock, input wire reset, output reg [2:0] register_counter);
     always @(posedge clock) begin
-    register_counter<=register_counter+3'b001;
+    register_counter<= #1 register_counter+3'b001;
     end
 
     always@(*) begin
@@ -1552,11 +1552,12 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
         //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESSARY CONTENT
 
         if (1)begin     //place will be reconsidered !!!!!!!!!!
-            ARF_RegSel<=4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
-            reset_timing_signal<=0;//be sure that timing signal doesn't reset in every cycle
-            IR_Enable<=0; 
-            RF_RSel<=4'b0000;
-            RF_TSel<=4'b0000;//making sure RF_TSel deactiveted for unintended writings
+            
+            ARF_RegSel<= #2 4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
+            reset_timing_signal<= #2 0;//be sure that timing signal doesn't reset in every cycle
+            IR_Enable<= #2 0; 
+            RF_RSel<= #2 4'b0000;
+            RF_TSel<= #2 4'b0000;//making sure RF_TSel deactiveted for unintended writings
         end
   
 
