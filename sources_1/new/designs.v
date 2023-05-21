@@ -739,7 +739,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
         
         else if(timing_signal==3'b011)begin
   
-            if ((ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD) ) //in these opcodes figure 1 order will be used
+            if ((ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD) || (ins_opcode == 4'hE)|| (ins_opcode == 4'hF)) //in these opcodes figure 1 order will be used
             begin 
                 //selection of AR or M[AR] not decided in here, it varies a lot depending on opcode, 
                 //so in the opcode address mode selection will be made.
@@ -811,7 +811,19 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     IR_Funsel<=2'b 01; //open load
                     IR_LH<=0;  //IR(7-0) selected
                 end
-
+                else if(ins_opcode==4'h0E && timing_signal==3'b011) begin
+                    ARF_FunSel<=2'b11;  // Increment
+                    ARF_RegSel<= 4'b0100; // SP is selected
+                    ARF_OutDSel<=2'b 01;  // SP is given as address to memory
+                    // copied to code from fetch here
+                    Mem_WR<=0;    //read from memory
+                    IR_Enable<=1; //activate IR
+                    IR_Funsel<=2'b 01; //open load
+                    IR_LH<=0;  //IR(7-0) selected
+                end
+                else if(ins_opcode==4'h0F && timing_signal==3'b011) begin
+                    
+                end
              end
 
 
@@ -1641,6 +1653,25 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     MuxCSel<=1; //RF's output is sent to alu
                     ALU_FunSel=4'b0000; //RF is sent to memory
 
+                end
+
+                else if(ins_opcode==4'h0E && timing_signal==3'b100) begin
+                    MuxASel<=2'b10; //selects IROut
+                    RF_FunSel<= 2'b01; //open load for RF
+                    case (ins_rsel)
+                    2'b00: begin
+                    RF_RSel<=4'b1000;   //R1 is chosen
+                    end
+                    2'b01: begin
+                    RF_RSel<=4'b0100;   //R2 is chosen
+                    end
+                    2'b10: begin
+                    RF_RSel<=4'b0010;   //R3 is chosen
+                    end
+                    2'b11: begin
+                    RF_RSel<=4'b0001;   //R4 is chosen
+                    end
+                    endcase
                 end
 
         reset_timing_signal <= 1'b1; //counter has zeroed.
