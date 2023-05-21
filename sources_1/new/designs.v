@@ -572,7 +572,7 @@ module Counter(input wire clock, input wire reset, output reg [3:0] register_cou
         end
         else
         begin
-            register_counter<= #1 register_counter+4'b0001;
+            register_counter<= #0.25 register_counter+4'b0001;
         end
     end
 
@@ -762,7 +762,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         // RF_OutASel<=3'b111;
         // RF_OutBSel<=3'b111;
         
-        #20;
+        #5;
         RF_RSel<=4'b0000;
         ARF_RegSel<=4'b0000;
         RF_TSel<=4'b0000;
@@ -774,16 +774,21 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
 
     always @(posedge reset_timing_signal) begin
         if(!delay) begin
-            ARF_RegSel<= #20 4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
-            reset_timing_signal<= #20 0;//be sure that timing signal doesn't reset in every cycle
-            IR_Enable<= #20 0; 
-            RF_RSel<= #20 4'b0000;
-            RF_TSel<= #20 4'b0000;//making sure RF_TSel deactiveted for unintended writings
-            
-
+            ARF_RegSel<= #5 4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
+            IR_Enable<= #5 0; 
+            RF_RSel<= #5 4'b0000;
+            RF_TSel<= #5 4'b0000;//making sure RF_TSel deactiveted for unintended writings
+            reset_timing_signal<= #5 0;//be sure that timing signal doesn't reset in every cycle
         end
     end
 
+
+    always @(timing_signal) begin
+        ARF_RegSel<= #10 4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
+        IR_Enable<= #10 0; 
+        RF_RSel<= #10 4'b0000;
+        RF_TSel<= #10 4'b0000;//making sure RF_TSel deactiveted for unintended writings
+    end
  
 
     //operations
@@ -798,12 +803,13 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
             IR_Enable<=1; //activate IR
             IR_Funsel<=2'b 01; //open load
             IR_LH<=0;  //IR(7-0) selected
-            
+            ARF_RegSel <=4'b0000;
 
 
          end
         else if(timing_signal==4'b0001) begin //2nd phase of fetch cycle
             //IR(15-8)<-M[PC],  PC<-PC+1
+            IR_Enable<=0;
             ARF_FunSel<=2'b11; //increment by 1
             ARF_RegSel <=4'b0001; //open PC
            
@@ -834,6 +840,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         //register selections for output 
         
         else if(timing_signal==4'b0011)begin
+            ARF_RegSel <=4'b0000;
   
             if ((ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD) || (ins_opcode == 4'hE)|| (ins_opcode == 4'hF)) //in these opcodes figure 1 order will be used
             begin 
@@ -859,58 +866,58 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
                    
                 end
 
-                else if(ins_opcode==4'hA) begin
+                else if(ins_opcode == 4'hA) begin
+                    IR_Enable<=0;
                 if(ALUOutFlag[3]==1'b0) begin
                     MuxBSel<=2'b10; //IR(7-0) will go to ARF
                     ARF_RegSel<=4'b0001; // select only PC
                     ARF_FunSel<=2'b01; //load 
                     end
-                    reset_timing_signal <= 1'b1; //counter is zeroed.
                 end
 
-                else if(ins_opcode==4'hC) begin
-                if(ins_addressing_mode==1'b0) begin //immediate addressing
-                    MuxASel<=2'b10; //selects IROut
-                    RF_FunSel<= 2'b01; //open load for RF
-                    case (ins_rsel)
-                    2'b00: begin
-                    RF_RSel<=4'b1000;   //R1 is chosen
+                else if(ins_opcode == 4'hC) begin
+                    IR_Enable<=0;
+                    if(ins_addressing_mode==1'b0) begin //immediate addressing
+                        MuxASel<=2'b10; //selects IROut
+                        RF_FunSel<= 2'b01; //open load for RF
+                        case (ins_rsel)
+                        2'b00: begin
+                        RF_RSel<=4'b1000;   //R1 is chosen
+                        end
+                        2'b01: begin
+                        RF_RSel<=4'b0100;   //R2 is chosen
+                        end
+                        2'b10: begin
+                        RF_RSel<=4'b0010;   //R3 is chosen
+                        end
+                        2'b11: begin
+                        RF_RSel<=4'b0001;   //R4 is chosen
+                        end
+                        endcase
                     end
-                    2'b01: begin
-                    RF_RSel<=4'b0100;   //R2 is chosen
+                    else begin //direct addressing
+                        ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
+                        Mem_WR<=0;    //read from memory
+                        MuxASel<=2'b01; // selects memory output in MUX A
+                        RF_FunSel<=2'b01; //open load for RF
+                        case (ins_rsel)
+                        2'b00: begin
+                        RF_RSel<=4'b1000;   //R1 is chosen
+                        end
+                        2'b01: begin
+                        RF_RSel<=4'b0100;   //R2 is chosen
+                        end
+                        2'b10: begin
+                        RF_RSel<=4'b0010;   //R3 is chosen
+                        end
+                        2'b11: begin
+                        RF_RSel<=4'b0001;   //R4 is chosen
+                        end
+                        endcase    
                     end
-                    2'b10: begin
-                    RF_RSel<=4'b0010;   //R3 is chosen
-                    end
-                    2'b11: begin
-                    RF_RSel<=4'b0001;   //R4 is chosen
-                    end
-                    endcase
-                    reset_timing_signal <= 1'b1; //counter is zeroed.
                 end
-                else begin //direct addressing
-                    ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
-                    Mem_WR<=0;    //read from memory
-                    MuxASel<=2'b01; // selects memory output in MUX A
-                    RF_FunSel<=2'b01; //open load for RF
-                    case (ins_rsel)
-                    2'b00: begin
-                    RF_RSel<=4'b1000;   //R1 is chosen
-                    end
-                    2'b01: begin
-                    RF_RSel<=4'b0100;   //R2 is chosen
-                    end
-                    2'b10: begin
-                    RF_RSel<=4'b0010;   //R3 is chosen
-                    end
-                    2'b11: begin
-                    RF_RSel<=4'b0001;   //R4 is chosen
-                    end
-                    endcase    
-                    reset_timing_signal <= 1'b1; //counter has zeroed.
-                end
-                end
-                else if(ins_opcode==4'hD && timing_signal==4'b0011) begin
+                else if(ins_opcode == 4'hD && timing_signal==4'b0011) begin
+                    IR_Enable<=0;
                     ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
                     Mem_WR<=0;    //read from memory
                     case (ins_rsel)
@@ -930,10 +937,11 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
                     MuxCSel<=0; //RF's output is sent to alu
                     ALU_FunSel<=4'b0000; //RF is sent to memory
                     Mem_WR<=1;    //write to from memory
-                    reset_timing_signal <= 1'b1; //counter is zeroed.
+                   
 
                 end
-                else if(ins_opcode==4'hE && timing_signal==4'b0011) begin
+                else if(ins_opcode == 4'hE && timing_signal==4'b0011) begin
+                    IR_Enable<=0;
                     ARF_OutDSel<=2'b 01;  // SP is given as address to memory
                     Mem_WR<=0;    //read from memory
                     MuxASel<=2'b01; //selects memory for MUX A
@@ -954,7 +962,8 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
                     endcase
 
                 end
-                else if(ins_opcode==4'hF && timing_signal==4'b0011) begin
+                else if(ins_opcode == 4'hF && timing_signal==4'b0011) begin
+                    IR_Enable<=0;
                     ARF_RegSel<= 4'b0100; // SP is selected
                     ARF_OutDSel<=2'b01;  // SP is given as address to memory
                     Mem_WR<=0; // alu is not yet giving output to memory
@@ -1050,9 +1059,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
              end
          end
         
-        else if ((ins_opcode == 4'h9) && (timing_signal==4'b0100) ) begin
-             reset_timing_signal <= 1'b1; //counter is zeroed.
-        end 
+
         
         else if((timing_signal==4'b0100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b01 )  && 
                  !(  (ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD)  )  )begin  //next cycle of 1st RF, 2nd ARF
@@ -1081,6 +1088,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h0)) begin // AND
+            IR_Enable<=0;
             ALU_FunSel <= 4'b0111 ;
             Mem_WR <= 0;
 
@@ -1135,11 +1143,12 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+           
             
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h1)) begin // OR
+            IR_Enable<=0;
             ALU_FunSel <= 4'b1000 ;
             Mem_WR <= 0;
 
@@ -1194,11 +1203,12 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
             
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h2)) begin // NOT
+            IR_Enable<=0;
             ALU_FunSel <= 4'b0010 ;
             Mem_WR <= 0;
 
@@ -1253,12 +1263,12 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
             
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h3)) begin // ADD
-
+            IR_Enable<=0;
             ALU_FunSel <= 4'b0100 ;
             Mem_WR <= 0;
 
@@ -1313,12 +1323,12 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
             
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h4)) begin // SUB
-            ALU_FunSel <= 4'b0101 ;
+           IR_Enable<=0;
+           ALU_FunSel <= 4'b0101 ;
             Mem_WR <= 0;
 
             begin // write to register
@@ -1372,11 +1382,12 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
             
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h5)) begin // LSR
+            IR_Enable<=0;
             ALU_FunSel <= 4'b1100 ;
             Mem_WR <= 0;
 
@@ -1431,13 +1442,12 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
             
         end
 
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h6)) begin // LSL
-
+            IR_Enable<=0;
             ALU_FunSel <= 4'b1011 ;
             Mem_WR <= 0;
 
@@ -1492,21 +1502,24 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
             
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h7)) begin // INC (takes 3 cycle) 1. cycle
+            IR_Enable<=0;
             RF_FunSel <= 2'b00; //Clear 
             RF_TSel <= 4'b0001; //Only T4 is enabled.
         end
 
         else if((timing_signal==4'b0110) && (ins_opcode == 4'h7)) begin // INC (takes 3 cycle) 2. cycle
+            IR_Enable<=0;
             RF_FunSel <= 2'b11; // Increment
             RF_TSel <= 4'b0001; //Only T4 is enabled. Now T4 is 1.
         end
 
         else if ((timing_signal==4'b0111) && (ins_opcode == 4'h7)) begin // INC (takes 3 cycle) 3. cycle
+            IR_Enable<=0;
             ALU_FunSel <= 4'b0100; // SREG1 + 1
             Mem_WR <= 0;
             
@@ -1561,25 +1574,26 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+        
 
         end
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'h8)) begin // DEC (takes 3 cycle) 1. cycle
-
+            IR_Enable<=0;
             RF_FunSel <= 2'b00; //Clear 
             RF_TSel <= 4'b0001; //Only T4 is enabled.
 
         end
 
         else if((timing_signal==4'b0110) && (ins_opcode == 4'h8)) begin // DEC (takes 3 cycle) 2. cycle
-
+            IR_Enable<=0;
             RF_FunSel <= 2'b11; // Increment
             RF_TSel <= 4'b0001; //Only T4 is enabled. Now T4 is 1.
 
         end
 
         else if ((timing_signal==4'b0111) && (ins_opcode == 4'h8)) begin // DEC (takes 3 cycle) 3. cycle
+            IR_Enable<=0;
             ALU_FunSel <= 4'b0101; // SREG1 - 1
             Mem_WR <= 0;
             
@@ -1634,13 +1648,13 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
 
         end
 
 
         else if((timing_signal==4'b0101) && (ins_opcode == 4'hB)) begin // MOV
-        
+            IR_Enable<=0;
             ALU_FunSel <= 4'b0000 ;
             Mem_WR <= 0;
 
@@ -1694,23 +1708,47 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         
             end
 
-            reset_timing_signal <= 1'b1; //counter has zeroed.
+            
 
          end
 
         else if(ins_opcode==4'hE && timing_signal==4'b0100) begin
+            IR_Enable<=0;
             ARF_FunSel<=  2'b11;  // Increment
             ARF_RegSel<=  4'b0100; // SP is selected
-            reset_timing_signal <= 1'b1; //counter is zeroed.
         end
 
         else if(ins_opcode==4'hF && timing_signal==4'b0100) begin
+            IR_Enable<=0;
             ARF_FunSel<=2'b10;  // Decrement
             ARF_RegSel<= 4'b0100; // SP is selected
-            reset_timing_signal <= 1'b1; //counter is zeroed.
         end
 
         
+        else if (
+
+            ((ins_opcode == 4'h0 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'h1 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h2 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h3 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h4 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h5 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'h6 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'h7 )&& (timing_signal == 4'b1000 ))||
+            ((ins_opcode == 4'h8 )&& (timing_signal == 4'b1000  ))||
+            ((ins_opcode == 4'h9) && (timing_signal==4'b0100))||
+            ((ins_opcode == 4'hA )&& (timing_signal == 4'b0100  ))||
+            ((ins_opcode == 4'hB )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'hC )&& (timing_signal == 4'b0100 ))||
+            ((ins_opcode == 4'hD )&& (timing_signal == 4'b0100 ))||
+            ((ins_opcode == 4'hE )&& (timing_signal == 4'b0101))||
+            ((ins_opcode == 4'hF )&& (timing_signal == 4'b0101 ))
+            
+         ) begin
+             reset_timing_signal <= 1'b1; //counter is zeroed.
+        end 
+
+
 
 
 

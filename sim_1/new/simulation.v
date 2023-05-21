@@ -204,7 +204,7 @@ initial begin
     clock=0;
 end
 
-always #20 clock=~clock; 
+always #5 clock=~clock; 
 
 
 
