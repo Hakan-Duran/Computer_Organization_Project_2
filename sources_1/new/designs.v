@@ -800,30 +800,18 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     IR_LH<=0;  //IR(7-0) selected
                 end
                 end
-
                 else if(ins_opcode==4'h0D && timing_signal==3'b100) begin
-                    case (ins_rsel)
-                    2'b00: begin
-                    RF_RSel<=4'b1000;   //R1 is chosen
-                    outasel<=3'b100;    //R1 is sent to MUXC
-                    end
-                    2'b01: begin
-                    RF_RSel<=4'b0100;   //R2 is chosen
-                    outasel<=3'b101;    //R2 is sent to MUXC
-                    end
-                    2'b10: begin
-                    RF_RSel<=4'b0010;   //R3 is chosen
-                    outasel<=3'b110;    //R3 is sent to MUXC
-                    end
-                    2'b11: begin
-                    RF_RSel<=4'b0001;   //R4 is chosen
-                    outasel<=3'b111;    //R4 is sent to MUXC
-                    end
-                    endcase
-                    MuxCSel<=1; //RF's output is sent to alu
-                    ALU_FunSel=4'b0000; //RF is sent to memory
-
+                    ARF_FunSel<=2'b01; // open load
+                    MuxBSel <= 2'b10; //IROut is selected
+                    ARF_RegSel<=4'b1000;  //select AR
+                    // copied to code from fetch here
+                    ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
+                    Mem_WR<=0;    //read from memory
+                    IR_Enable<=1; //activate IR
+                    IR_Funsel<=2'b 01; //open load
+                    IR_LH<=0;  //IR(7-0) selected
                 end
+
              end
 
 
@@ -1629,6 +1617,30 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     end
                     endcase
                 end        
+                end
+
+                else if(ins_opcode==4'h0D && timing_signal==3'b101) begin
+                    case (ins_rsel)
+                    2'b00: begin
+                    RF_RSel<=4'b1000;   //R1 is chosen
+                    outasel<=3'b100;    //R1 is sent to MUXC
+                    end
+                    2'b01: begin
+                    RF_RSel<=4'b0100;   //R2 is chosen
+                    outasel<=3'b101;    //R2 is sent to MUXC
+                    end
+                    2'b10: begin
+                    RF_RSel<=4'b0010;   //R3 is chosen
+                    outasel<=3'b110;    //R3 is sent to MUXC
+                    end
+                    2'b11: begin
+                    RF_RSel<=4'b0001;   //R4 is chosen
+                    outasel<=3'b111;    //R4 is sent to MUXC
+                    end
+                    endcase
+                    MuxCSel<=1; //RF's output is sent to alu
+                    ALU_FunSel=4'b0000; //RF is sent to memory
+
                 end
 
         reset_timing_signal <= 1'b1; //counter has zeroed.
