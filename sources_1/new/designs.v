@@ -800,7 +800,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
                     IR_LH<=0;  //IR(7-0) selected
                 end
                 end
-                else if(ins_opcode==4'h0D && timing_signal==3'b100) begin
+                else if(ins_opcode==4'h0D && timing_signal==3'b011) begin
                     ARF_FunSel<=2'b01; // open load
                     MuxBSel <= 2'b10; //IROut is selected
                     ARF_RegSel<=4'b1000;  //select AR
