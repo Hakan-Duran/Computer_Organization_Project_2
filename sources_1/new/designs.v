@@ -1353,7 +1353,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, input reset_timing);/
 
         end
 
-        else if ((timing_signal==3'b111) && (ins_opcode == 4'h8)) begin // INC (takes 3 cycle) 3. cycle
+        else if ((timing_signal==3'b111) && (ins_opcode == 4'h8)) begin // DEC (takes 3 cycle) 3. cycle
             ALU_FunSel <= 4'b0101; // SREG1 - 1
             Mem_WR <= 0;
             
