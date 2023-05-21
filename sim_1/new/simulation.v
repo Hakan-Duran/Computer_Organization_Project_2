@@ -151,7 +151,7 @@ initial begin
     clock=0;
 end
 
-always #2 clock=~clock; 
+always #20 clock=~clock; 
 
 
 

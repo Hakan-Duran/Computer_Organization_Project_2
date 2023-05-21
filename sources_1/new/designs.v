@@ -727,7 +727,7 @@ module Control_Unit_Combined_With_ALU_System (input clock, /*input reset_timing,
         ARF_RegSel<=4'b1111;
         RF_TSel<=4'b1111;
         reset_timing_signal<=1;
-        #5;
+        #50;
         RF_RSel<=4'b0000;
         ARF_RegSel<=4'b0000;
         RF_TSel<=4'b0000;
