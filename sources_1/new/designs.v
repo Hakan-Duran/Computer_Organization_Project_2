@@ -598,7 +598,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
     output wire [15:0] IROut,
     output wire [3:0] timing_signal,
 
-    output reg[3:0] ins_opcode_for_reset,
+
     output reg[3:0] ins_opcode,
     output reg [1:0] ARF_OutCSel,
     output reg[1:0] ARF_OutDSel,
@@ -688,7 +688,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
 
 
     
-
+    
 
     //figure 2 mode: (if adressing mode is N/A from the table)
     wire[3:0] ins_dstreg = IROut[11:8];
@@ -804,34 +804,37 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
     //operations
     always @(*) begin  //registers have internal clock mechanisms, don't implement yours
         Mem_CS<=0;
+        ins_opcode<=IROut[15:12];
         //opcode and timing signal condtions
         //don't forget to count from 0
         if (
 
-            ((ins_opcode_for_reset == 4'h0 )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'h1 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h2 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h3 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h4 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h5 )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'h6 )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'h7 )&& (timing_signal == 4'b1000 ))||
-            ((ins_opcode_for_reset == 4'h8 )&& (timing_signal == 4'b1000  ))||
-            ((ins_opcode_for_reset == 4'h9 )&& (timing_signal == 4'b0100  ))||
-            ((ins_opcode_for_reset == 4'hA )&& (timing_signal == 4'b0100  ))||
-            ((ins_opcode_for_reset == 4'hB )&& (timing_signal == 4'b0101 )) ||
-            ((ins_opcode_for_reset == 4'hC )&& (timing_signal == 4'b0100 )) ||
-            ((ins_opcode_for_reset == 4'hD )&& (timing_signal == 4'b0100 ))||
-            ((ins_opcode_for_reset == 4'hE )&& (timing_signal == 4'b0101))||
-            ((ins_opcode_for_reset == 4'hF )&& (timing_signal == 4'b0101 ))
+            ((ins_opcode == 4'h0 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'h1 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h2 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h3 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h4 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode == 4'h5 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'h6 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode == 4'h7 )&& (timing_signal == 4'b1000 ))||
+            ((ins_opcode == 4'h8 )&& (timing_signal == 4'b1000  ))||
+            ((ins_opcode == 4'h9 )&& (timing_signal == 4'b0100  ))||
+            ((ins_opcode == 4'hA )&& (timing_signal == 4'b0100  ))||
+            ((ins_opcode == 4'hB )&& (timing_signal == 4'b0110 )) ||
+            ((ins_opcode == 4'hC )&& (timing_signal == 4'b0100 )) ||
+            ((ins_opcode == 4'hD )&& (timing_signal == 4'b0100 ))||
+            ((ins_opcode == 4'hE )&& (timing_signal == 4'b0101))||
+            ((ins_opcode == 4'hF )&& (timing_signal == 4'b0101 ))
             
          ) begin
              reset_timing_signal <= 1'b1; //counter is zeroed.
         end 
 
-
-        ins_opcode_for_reset<= #10 ins_opcode;
-        ins_opcode<= #5 IROut[15:12];
+        // if((reset_timing_signal==1'b1) ||  (timing_signal==4'b1111))begin
+        //     ins_opcode_for_reset<= #10 ins_opcode;
+        // end
+        
+        // ins_opcode<= #5 IROut[15:12];
         IR_Enable<=0;
 
 
@@ -1107,7 +1110,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
             RF_OutASel<= {1'b1,ins_sreg1[1:0]};//Rx selection
         end
         else if((timing_signal==4'b0100) &&  (  {ins_sreg1[2],ins_sreg2[2]} ==  2'b11 ) &&
-                  !(  (ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD)  ))begin  //next cycle of both are ARF
+                  !(  (ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode== 4'hC) || (ins_opcode == 4'hD)  ))begin  //next cycle of both are ARF
             
             MuxCSel<=1;   //ARF's output for ALU A (sreg 1)
 
