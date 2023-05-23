@@ -599,7 +599,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
     output wire [3:0] timing_signal,
 
 
-    output reg [3:0] ins_opcode_for_reset, 
+    output reg[3:0] ins_opcode,
     output reg [1:0] ARF_OutCSel,
     output reg[1:0] ARF_OutDSel,
     output reg [1:0] IR_Funsel,
@@ -677,14 +677,17 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
 
 
 
-    wire [3:0] ins_opcode=IROut[15:12];
+  
 
     //not sure
-    always @(*) begin
-        if((ARF_RegSel==4'b0001) && (ARF_FunSel==2'b11) )begin
-            ins_opcode_for_reset<= #20 IROut[15:12];
-        end
-    end
+    // always @(*) begin
+    //     if((ARF_RegSel==4'b0001) && (ARF_FunSel==2'b11) || (timing_signal==4'b1111))begin
+    //         ins_opcode<= #5 IROut[15:12];
+    //     end
+    // end
+
+
+    reg[3:0] ins_opcode_for_reset;
 
 
     //figure 2 mode: (if adressing mode is N/A from the table)
@@ -803,6 +806,35 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         Mem_CS<=0;
         //opcode and timing signal condtions
         //don't forget to count from 0
+        if (
+
+            ((ins_opcode_for_reset == 4'h0 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode_for_reset == 4'h1 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode_for_reset == 4'h2 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode_for_reset == 4'h3 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode_for_reset == 4'h4 )&& (timing_signal == 4'b0110  ))||
+            ((ins_opcode_for_reset == 4'h5 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode_for_reset == 4'h6 )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode_for_reset == 4'h7 )&& (timing_signal == 4'b1000 ))||
+            ((ins_opcode_for_reset == 4'h8 )&& (timing_signal == 4'b1000  ))||
+            ((ins_opcode_for_reset == 4'h9 )&& (timing_signal == 4'b0100  ))||
+            ((ins_opcode_for_reset == 4'hA )&& (timing_signal == 4'b0100  ))||
+            ((ins_opcode_for_reset == 4'hB )&& (timing_signal == 4'b0110 ))||
+            ((ins_opcode_for_reset == 4'hC )&& (timing_signal == 4'b0100 ))||
+            ((ins_opcode_for_reset == 4'hD )&& (timing_signal == 4'b0100 ))||
+            ((ins_opcode_for_reset == 4'hE )&& (timing_signal == 4'b0101))||
+            ((ins_opcode_for_reset == 4'hF )&& (timing_signal == 4'b0101 ))
+            
+         ) begin
+             reset_timing_signal <= 1'b1; //counter is zeroed.
+        end 
+
+
+        ins_opcode_for_reset<= #10 ins_opcode;
+        ins_opcode<= #5 IROut[15:12];
+        IR_Enable<=0;
+
+
         if(timing_signal==4'b0000) begin //start of the fetch cycle 
             //IR(7-0)<-M[PC]
             ARF_OutDSel<=2'b 11; //PC will be given as adress to memory
@@ -1732,28 +1764,28 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         end
 
         
-        else if (
+        // if (
 
-            ((ins_opcode_for_reset == 4'h0 )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'h1 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h2 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h3 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h4 )&& (timing_signal == 4'b0110  ))||
-            ((ins_opcode_for_reset == 4'h5 )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'h6 )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'h7 )&& (timing_signal == 4'b1000 ))||
-            ((ins_opcode_for_reset == 4'h8 )&& (timing_signal == 4'b1000  ))||
-            ((ins_opcode_for_reset == 4'h9) && (timing_signal == 4'b0100))||
-            ((ins_opcode_for_reset == 4'hA )&& (timing_signal == 4'b0100  ))||
-            ((ins_opcode_for_reset == 4'hB )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'hC )&& (timing_signal == 4'b0100 ))||
-            ((ins_opcode_for_reset == 4'hD )&& (timing_signal == 4'b0100 ))||
-            ((ins_opcode_for_reset == 4'hE )&& (timing_signal == 4'b0101))||
-            ((ins_opcode_for_reset == 4'hF )&& (timing_signal == 4'b0101 ))
+        //     ((ins_opcode == 4'h0 )&& (timing_signal == 4'b0110 ))||
+        //     ((ins_opcode == 4'h1 )&& (timing_signal == 4'b0110  ))||
+        //     ((ins_opcode == 4'h2 )&& (timing_signal == 4'b0110  ))||
+        //     ((ins_opcode == 4'h3 )&& (timing_signal == 4'b0110  ))||
+        //     ((ins_opcode == 4'h4 )&& (timing_signal == 4'b0110  ))||
+        //     ((ins_opcode == 4'h5 )&& (timing_signal == 4'b0110 ))||
+        //     ((ins_opcode == 4'h6 )&& (timing_signal == 4'b0110 ))||
+        //     ((ins_opcode == 4'h7 )&& (timing_signal == 4'b1000 ))||
+        //     ((ins_opcode == 4'h8 )&& (timing_signal == 4'b1000  ))||
+        //     ((ins_opcode == 4'h9) && (timing_signal == 4'b0100))||
+        //     ((ins_opcode == 4'hA )&& (timing_signal == 4'b0100  ))||
+        //     ((ins_opcode == 4'hB )&& (timing_signal == 4'b0110 ))||
+        //     ((ins_opcode == 4'hC )&& (timing_signal == 4'b0100 ))||
+        //     ((ins_opcode == 4'hD )&& (timing_signal == 4'b0100 ))||
+        //     ((ins_opcode == 4'hE )&& (timing_signal == 4'b0101))||
+        //     ((ins_opcode == 4'hF )&& (timing_signal == 4'b0101 ))
             
-         ) begin
-             reset_timing_signal <= 1'b1; //counter is zeroed.
-        end 
+        //  ) begin
+        //      reset_timing_signal <= 1'b1; //counter is zeroed.
+        // end 
 
 
 
