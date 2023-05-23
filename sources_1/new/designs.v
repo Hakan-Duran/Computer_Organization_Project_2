@@ -598,7 +598,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
     output wire [15:0] IROut,
     output wire [3:0] timing_signal,
 
-
+    output reg[3:0] ins_opcode_for_reset,
     output reg[3:0] ins_opcode,
     output reg [1:0] ARF_OutCSel,
     output reg[1:0] ARF_OutDSel,
@@ -687,7 +687,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
     // end
 
 
-    reg[3:0] ins_opcode_for_reset;
+    
 
 
     //figure 2 mode: (if adressing mode is N/A from the table)
@@ -819,8 +819,8 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
             ((ins_opcode_for_reset == 4'h8 )&& (timing_signal == 4'b1000  ))||
             ((ins_opcode_for_reset == 4'h9 )&& (timing_signal == 4'b0100  ))||
             ((ins_opcode_for_reset == 4'hA )&& (timing_signal == 4'b0100  ))||
-            ((ins_opcode_for_reset == 4'hB )&& (timing_signal == 4'b0110 ))||
-            ((ins_opcode_for_reset == 4'hC )&& (timing_signal == 4'b0100 ))||
+            ((ins_opcode_for_reset == 4'hB )&& (timing_signal == 4'b0101 )) ||
+            ((ins_opcode_for_reset == 4'hC )&& (timing_signal == 4'b0100 )) ||
             ((ins_opcode_for_reset == 4'hD )&& (timing_signal == 4'b0100 ))||
             ((ins_opcode_for_reset == 4'hE )&& (timing_signal == 4'b0101))||
             ((ins_opcode_for_reset == 4'hF )&& (timing_signal == 4'b0101 ))
