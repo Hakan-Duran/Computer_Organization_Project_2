@@ -131,7 +131,7 @@ module project2Test ();
     wire [3:0] timing_signal;
 
 
-
+    wire [3:0] ins_opcode_for_reset;
     wire  [1:0] ARF_OutCSel;
     wire [1:0] ARF_OutDSel;
     wire  [1:0] IR_Funsel;
@@ -172,7 +172,7 @@ Control_Unit_Combined_With_ALU_System uut(
     timing_signal,
 
 
-
+    ins_opcode_for_reset,
      ARF_OutCSel,
     ARF_OutDSel,
      IR_Funsel,
