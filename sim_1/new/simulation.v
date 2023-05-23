@@ -110,3 +110,104 @@ endmodule
 //end of project 1 test
 
 
+module project2Test ();
+
+//inputs
+    reg clock;
+    // reg reset_timing;
+    
+//outputs of the registers
+    wire [7:0] AOut;
+    wire [7:0] BOut;
+    wire [7:0] ALUOut;
+    wire [3:0] ALUOutFlag;
+    wire [7:0] ARF_AOut;
+    wire [7:0] Address;
+    wire [7:0] MemoryOut;
+    wire [7:0] MuxAOut;
+    wire [7:0] MuxBOut;
+    wire [7:0] MuxCOut;
+    wire [15:0] IROut;
+    wire [3:0] timing_signal;
+
+
+
+    wire  [1:0] ARF_OutCSel;
+    wire [1:0] ARF_OutDSel;
+    wire  [1:0] IR_Funsel;
+    wire  [1:0] ARF_FunSel;
+    wire  [1:0] RF_FunSel;
+    wire  [3:0] ALU_FunSel;
+    wire  [3:0] RF_RSel;
+    wire  [3:0] ARF_RegSel;
+    wire  Mem_WR;
+    wire  Mem_CS;
+    wire  IR_Enable;
+    wire  IR_LH;
+    wire  [1:0] MuxASel;
+    wire  [1:0] MuxBSel;
+    wire  MuxCSel;
+    wire  [2:0] RF_OutASel;
+    wire  [2:0] RF_OutBSel;
+    wire  [3:0] RF_TSel;
+
+
+
+
+
+Control_Unit_Combined_With_ALU_System uut(
+    clock, /*reset_timing,*/ 
+    // output wires
+    AOut,
+    BOut,
+    ALUOut,
+    ALUOutFlag,
+    ARF_AOut,
+    Address,
+    MemoryOut,
+    MuxAOut,
+    MuxBOut,
+    MuxCOut,
+    IROut,
+    timing_signal,
+
+
+
+     ARF_OutCSel,
+    ARF_OutDSel,
+     IR_Funsel,
+     ARF_FunSel,
+     RF_FunSel,
+     ALU_FunSel,
+     RF_RSel,
+     ARF_RegSel,
+     Mem_WR,
+     Mem_CS,
+     IR_Enable,
+     IR_LH,
+     MuxASel,
+     MuxBSel,
+     MuxCSel,
+     RF_OutASel,
+     RF_OutBSel,
+     RF_TSel
+
+
+
+
+
+
+
+);
+
+initial begin
+    clock=0;
+end
+
+always #5 clock=~clock; 
+
+
+
+
+    
+endmodule
