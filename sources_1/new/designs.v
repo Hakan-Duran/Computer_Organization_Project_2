@@ -1556,12 +1556,14 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
 
         else if((timing_signal==4'b0110) && (ins_opcode == 4'h7)) begin // INC (takes 3 cycle) 2. cycle
             IR_Enable<=0;
+            RF_OutBSel<=3'b011;
             RF_FunSel <= 2'b11; // Increment
             RF_TSel <= 4'b0001; //Only T4 is enabled. Now T4 is 1.
         end
 
         else if ((timing_signal==4'b0111) && (ins_opcode == 4'h7)) begin // INC (takes 3 cycle) 3. cycle
             IR_Enable<=0;
+            RF_OutBSel<=3'b011;
             ALU_FunSel <= 4'b0100; // SREG1 + 1
             Mem_WR <= 0;
             
@@ -1628,6 +1630,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         end
 
         else if((timing_signal==4'b0110) && (ins_opcode == 4'h8)) begin // DEC (takes 3 cycle) 2. cycle
+            RF_OutBSel<=3'b011;
             IR_Enable<=0;
             RF_FunSel <= 2'b11; // Increment
             RF_TSel <= 4'b0001; //Only T4 is enabled. Now T4 is 1.
@@ -1635,6 +1638,7 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         end
 
         else if ((timing_signal==4'b0111) && (ins_opcode == 4'h8)) begin // DEC (takes 3 cycle) 3. cycle
+            RF_OutBSel<=3'b011;
             IR_Enable<=0;
             ALU_FunSel <= 4'b0101; // SREG1 - 1
             Mem_WR <= 0;
