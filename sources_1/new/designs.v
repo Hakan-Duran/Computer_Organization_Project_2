@@ -968,6 +968,9 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
                 end
                 else if(ins_opcode == 4'hD && timing_signal==4'b0011) begin
                     IR_Enable<=0;
+                    $display("~Last instructor~");
+                    $display("Sum: ", ALUOut);
+                    $display("Time: ", $realtime);
                     ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
                     case (ins_rsel)
                     2'b00: begin
