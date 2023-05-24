@@ -271,13 +271,13 @@ B_comp_9[8] = 0;
             end
         4'b0100 : begin
             out = A_9 + B_9;
-            if(Flag[2] === 1) begin
-                out = out+9'b000000001;
-            end
+            // if(Flag[2] === 1) begin
+            //     out = out+9'b000000001;
+            // end
             OutALU = out[7:0];
-            Flag[0] = (A[7]&B[7])^OutALU[7];
-            Flag[1] = OutALU[7];
-            Flag[2] = out[8];
+            // Flag[0] = (A[7]&B[7])^OutALU[7];
+            // Flag[1] = OutALU[7];
+            // Flag[2] = out[8];
             if(OutALU === 8'b00000000) begin
                     Flag[3] = 1;
                 end
@@ -288,9 +288,9 @@ B_comp_9[8] = 0;
         4'b0101 : begin
             out = A_9 + B_comp_9 + 9'b000000001;
             OutALU = out[7:0];
-            Flag[0] = (A[7]^B[7])&(A[7]^OutALU[7]);
-            Flag[1] = OutALU[7];
-            Flag[2] = out[8];
+            // Flag[0] = (A[7]^B[7])&(A[7]^OutALU[7]);
+            // Flag[1] = OutALU[7];
+            // Flag[2] = out[8];
             if(OutALU === 8'b00000000) begin
                     Flag[3] = 1;
                 end
