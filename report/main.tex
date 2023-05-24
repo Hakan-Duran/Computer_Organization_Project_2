@@ -141,9 +141,11 @@ We've encountered with a lot of different problems. Syncing the clock with code 
 Another big problem was ensuring the security. Without security, we have overwrite some registers and
 didn't realize it. Enhancing security has provideded our code to be safe. 
 
+    The other issue was the limited time. 5 ns clock was not enough for us to simulate all the loop. In order to
+overcome it, we have adjusted the simulation time in setting by changing xsim.simulation.runtime to 4000 ns. Default is
+1000 ns.
 
-
-
+    We have learned how an instructor is performed in the computer, and its relates with clock cycles and ALU components.
 
 
 \section{CONCLUSION}
