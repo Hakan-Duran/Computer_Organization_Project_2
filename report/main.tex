@@ -70,7 +70,7 @@ memory reference parts. Yusuf also wrote the test bench and tested the system wi
 We used the ALU System module to determine the paths we should go through in order to implement the operations 
 determined by the instruction register. Then we designed the operations, using the selectors and multiplexers to choose
 the right values. After that, we tested the general project and made corrections in order to make it work properly, 
-according to the example memory cycle given.
+according to the example memory cycle given. 
 
 \section{IMPLEMENTATIONS AND EXPLANATIONS }
 \subsection{Fetch Cycle}
@@ -168,6 +168,10 @@ first project. We designed a simple fetch-decode-execute cycle which is capable 
 mode instructions such as arithmetic and logic operations on registers, as well as operations having an
 addressing mode such as loading a value from the memory or storing a value into the memory.
 
-During this homework, we used GitHub and help each other to fix some mistakes we made.  
+During this project, we communicated using whatsapp and we used GitHub to help each other fix some 
+mistakes we made. Some operations took more than one cycle to complete, therefore we needed to arrange 
+the timing accordingly. We needed to re-design the fetch cycle and conditions to increment the counters 
+to make the system work properly. The error checking was challenging for this project as we needed to 
+check each step over and over again to find what might be the cause of an error. 
 
 \end{document}
