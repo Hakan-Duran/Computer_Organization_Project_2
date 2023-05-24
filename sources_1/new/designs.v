@@ -961,7 +961,6 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
                 else if(ins_opcode == 4'hD && timing_signal==4'b0011) begin
                     IR_Enable<=0;
                     ARF_OutDSel<=2'b 00; //AR will be given as adress to memory
-                    Mem_WR<=0;    //read from memory
                     case (ins_rsel)
                     2'b00: begin
                     RF_OutASel<=3'b100;    //R1 is sent to MUXC
@@ -1008,7 +1007,6 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
                     IR_Enable<=0;
                     ARF_RegSel<= 4'b0100; // SP is selected
                     ARF_OutDSel<=2'b01;  // SP is given as address to memory
-                    Mem_WR<=0; // alu is not yet giving output to memory
                     case (ins_rsel)
                     2'b00: begin
                     RF_RSel<=4'b1000;   //R1 is chosen
