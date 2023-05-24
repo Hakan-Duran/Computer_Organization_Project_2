@@ -469,7 +469,7 @@ always @(*) begin
    case (selector)
       1'b0 : out= in0;
       1'b1 : out= in1;
-      default: assign out= in0;
+    //   default: out= in1;
    endcase
 end
    
