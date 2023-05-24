@@ -733,7 +733,7 @@ module CPUSystem (input Clock, input Reset,
 
          end
         else if(timing_signal==4'b0001) begin //2nd phase of fetch cycle
-            //IR(15-8)<-M[PC],  PC<-PC+1
+            //  PC<-PC+1
             IR_Enable<=0;
             ARF_FunSel<=2'b11; //increment by 1
             ARF_RegSel <=4'b0001; //open PC
@@ -744,7 +744,7 @@ module CPUSystem (input Clock, input Reset,
 
          end
         else if (timing_signal==4'b0010)begin //3rd and last phase of the fetch cycle
-            //PC<-PC+1
+            //IR(15-8)<-M[PC], PC<-PC+1
 
             // ARF_FunSel<=2'b11; //increment by 1
             // ARF_RegSel <=4'b0001; //open PC

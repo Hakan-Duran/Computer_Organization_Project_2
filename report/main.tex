@@ -84,15 +84,48 @@ binary 1111 which is equal to -0001, this is been made because reset signal
 does not depend on clock; therofore, after the reset we wait for new clock signal 
 to start new operations. New operations will be started with timing signal 0.
 
-INtial ve ilk always blcoklarından bahset**********************************
+Inside of inital block, we make all register values 0 for use in the operations.
+Then to prevent further changes we closed rsel and tsel values.
 
-For our combined module, we have  after making all necesessary connections, 
+We have 3 always block inside of our implementations. Our very first always
+ block works at every new instruction. It closes all rsels and tsels and also
+ closes IR enable. Also after reseting signal, we need to make reset command
+ 0 to prevent always 0 problem of counter.
 
-When timing signal 0 arrives to our combined system, it starts to fetch cycle. Our 
+2nd always block, works similar to 1st one but it doesn't reset at every time,
+because this operation doesn't needed. In here our purpose is to close all
+registers from changing their values with the incoming new timing signal.
+
+
+After making all necesessary connections, in 3rd always block, when timing signal 0 
+arrives to our combined system, it starts to fetch cycle. Our 
 fetch cycle is totally takes 3 cycles. It has been made 3 cycles to prvent 
 changes unintended changes on the PC and IR.
 
-At first (0th) cycle of the fetch, we made 
+
+
+At first (0th) cycle of the fetch, we just pushed values of M[PC] to the IR's LS 8 bits.
+This because memory can only give 8 bit output at once. To do this operation, we give PC
+as adress to memory.
+
+At second (1st) cycle, we only increased PC value by one. To do this, we just opened PC's
+register for input changes and send increment by one signal to funsel of arf.
+
+At last (2nd) cycle, we do combined operations of 0th and 1st cyles, but different than 0th,
+this time high bits of IR will be changed.
+
+
+
+For decoding part (3th cycle), for the opcodes that addresing mode doesn't requried, we made a simple output opener.
+In other words, our module looks at here to decide where to take sreg's. It depends on the where register resits. If [2] bit
+is 0 it means that it will be RF, if 1 it will be ARF. The pattern of RF same for [1:0], so we did not
+make a change end send them directly. However for ARF, we used switch case for manipulation.
+
+
+At the end of every insturction, we need to send a reset signal, so depending 
+on the opcode type, we will send request for reset. When all operations are finished 
+for a instuction, this operations occurs in the next clock cycle.
+
 
 
 
