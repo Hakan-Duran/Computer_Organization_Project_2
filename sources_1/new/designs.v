@@ -448,7 +448,15 @@ module Memory(
     //Declaration of the RAM Area
     reg[7:0] RAM_DATA[0:255];
     //Read Ram data from the file
-    initial $readmemh("RAM.mem", RAM_DATA);
+    initial begin
+        $readmemh("RAM.mem", RAM_DATA);
+        
+    end
+    always @(*) begin
+        $writememh("RAM.mem", RAM_DATA);
+    end
+   
+
     //Read the selected data from RAM
     always @(*) begin
         o = ~wr && ~cs ? RAM_DATA[address] : 8'hZ;
