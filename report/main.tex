@@ -63,16 +63,76 @@
 
 \setcounter{page}{1}
 \section{INTRODUCTION}
-In this project our purpose was to design a hardwired control unit. To achive 
-this we firstly implemented small components of this system. Yusuf did the fetch and decode parts, Hakan did the instructions without memory reference and Emre did the instructions with memory reference. Yusuf also wrote the test bench and tested the system with Hakan.
+In this project our purpose was to design a hardwired control unit. To achive this we divided it into parts. Yusuf did 
+the fetch and decode parts, Hakan did the instructions without memory reference and Emre did the instructions with 
+memory reference parts. Yusuf also wrote the test bench and tested the system with Hakan. 
 
-At first, Yusuf has designed the fetch cycle. Then Hakan and Emre designed the execute part. Hakan and Yusuf then tested the project and corrected the errors.
-
+We used the ALU System module to determine the paths we should go through in order to implement the operations 
+determined by the instruction register. Then we designed the operations, using the selectors and multiplexers to choose
+the right values. After that, we tested the general project and made corrections in order to make it work properly, 
+according to the example memory cycle given.
 
 \section{IMPLEMENTATIONS AND EXPLANATIONS }
 \subsection{Fetch Cycle}
 
 \subsection{Instructions With Address Reference}
+Instructions that have address references either write something on memory or execute a task coming from the chosen 
+memory address. 
+
+\subsubsection{BRA}
+In this operation, the adrress block of the instruction register is directly written into the program counter.
+
+To do this, the MUX B is selected as "10" to choose the input coming from the IR. The Regsel 
+input of the ARF is chosen as "0001" which activates only the PC and the Funsel input of the ARF is "01" indicating
+the load mode.
+
+\subsubsection{BNE}
+This operation is exactly the same as the "BRA" operation except that it checks zero flag of the ALU. If it is zero,
+the condition is met and the operation is done.
+
+\subsubsection{LD}
+This operation is implemented differently, depending on the addressing mode of the instruction.
+
+If the addressing mode is immediate addressing, indicated by "0", the address in the IR is written into a register
+chosen by the register selection bits of the instruction. To do this, MUX A is selected as "10" to choose the input 
+coming from the IR. The Funsel of RF is chosen as "01", indicating the load mode. The register to load is selected 
+using a case statement, depending on the value of the register selection bit of the instruction.
+
+
+If the addressing mode is direct addressing firstly, the value of the address register is given as address to the 
+memory which is indicated by the outDsel of the ARF being "00". Then, MUX A is selected as "01" to choose the input 
+coming from the memory. The Funsel of RF is chosen as "01", indicating the load mode. The register to load is selected 
+using a case statement, depending on the value of the register selection bit of the instruction.
+
+\subsubsection{ST}
+In this operation, the value in a register selected by the register selection bits of the IR is written to the memory
+location determined by the address register. 
+
+First, the D output of the ARF is selected as "00", so that the AR is given as address to memory. The register that 
+will write to the memory is again chosen by the register selection bits of the instruction, using a case statement.
+Then, the MUX C is selected as "0" to give the chosen register as the input to ALU. The ALU directly transfers the 
+value in the selected register to the memory, as the funsel is "0000". Then, the value is written into the desired
+memory location.
+
+\subsubsection{PUL}
+In this operation, the value in the memory address determined by the stack pointer is written into a register. 
+Then, the value of the SP is incremented.
+
+First, the D output of ARF is selected as "01" to give the SP as an address to the memory. Then, MUX A is selected
+as "01" in order for it to take the input coming from the memory. The Funsel of RF is chosen as "01", indicating the
+load mode. The register to load is selected using a case statement, depending on the value of the register selection
+bit of the instruction. In the next cycle, the value of SP is incremented using the ARF registers increment operation.
+
+\subsubsection{PSH}
+In this operation, the value in a register is written into the memory location determined by the stack pointer.
+Then, the value of the SP is decremented.
+
+First, the D output of ARF is selected as "01" to give the SP as an address to the memory. Then, the register is 
+selected depending on the value of the register selection bit of the instruction, that will be given as input to ALU.
+The MUX C is selected as "0" to take the input from the RF. The ALU directly conveys the value in the register with 
+the "0000" coded operation, so that the value in the register is written into the memory. In the next cycle, the value 
+of SP is incremented using the ARF registers increment operation.
+
 
 \subsection{Instructions Without Address Reference}
 
@@ -103,6 +163,11 @@ At first, Yusuf has designed the fetch cycle. Then Hakan and Emre designed the e
 
 
 \section{CONCLUSION}
-In this project we designed a hardwired control unit with the help of the ones we created in the first project. 
+In this project we designed a hardwired control unit with the help of the system module we created in the
+first project. We designed a simple fetch-decode-execute cycle which is capable of doing non addressing
+mode instructions such as arithmetic and logic operations on registers, as well as operations having an
+addressing mode such as loading a value from the memory or storing a value into the memory.
+
+During this homework, we used GitHub and help each other to fix some mistakes we made.  
 
 \end{document}
