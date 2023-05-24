@@ -423,19 +423,9 @@ B_comp_9[8] = 0;
 end
 endmodule
 
-// module aluPlusFlagReg(input clock,input[7:0] A,input[7:0] B,input[3:0]funsel,output[7:0] outALU);
-// wire[3:0] flag;
-// wire cin;
-// flag_reg FlagReg(clock,flag,cin);
-// alu arLogUn( A, B, cin, funsel, flag, outALU);
 
 
 
-// endmodule
-
-
-
-//last question **************************************
 //given module for memory
 module Memory(
     input wire[7:0] address,
@@ -503,7 +493,7 @@ endmodule
 
 
 
-
+//our module for first project
 module ALU_System (
     input [1:0] ARF_OutCSel,
     input[1:0] ARF_OutDSel,
@@ -566,9 +556,9 @@ module ALU_System (
 
 endmodule
 
-//before this section was in project 1
+//before this section was in project 1 ***********************************************
 
-
+//after this section is in project 2 *************************************************
 
 
 
@@ -589,7 +579,7 @@ endmodule
 
 
 
-module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,*/ 
+module CPUSystem (input Clock, input Reset,
 
 
     // output wires for control purposes
@@ -630,81 +620,19 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
 
 
 
-);//don't forget to reset counter at the begining and return back to normal condition!!!!
-    reg reset_timing_signal; 
+);
+    reg reset_timing_signal; //reset counter at the begining and return back to normal condition!!!!
     
-    Counter counter(Clock, (reset_timing_signal /*| reset_timing*/),timing_signal);
+    Counter counter(Clock, (reset_timing_signal | Reset),timing_signal);
 
-
-    // //wires for ALU_system
-    // //input wires
-    // reg [1:0] ARF_OutCSel;    //ARF_OutASel 
-    // reg[1:0] ARF_OutDSel;     //ARF_OutBSel
-    // reg [1:0] IR_Funsel;
-    // reg [1:0] ARF_FunSel;
-    // reg [1:0] RF_FunSel;
-    // reg [3:0] ALU_FunSel;
-    // reg [3:0] RF_RSel;
-    // reg [3:0] ARF_RegSel;
-    // // rsel   places: 3   2   1       0
-    // // values 4 bits: 1   1   1       1
-    // //                AR  SP  PCPrev  PC
-    
-    
-    // reg Mem_WR;
-    // reg Mem_CS;
-    // reg IR_Enable;
-    // reg IR_LH;//0=> (7-0), 1=> (15-8)
-    // reg [1:0] MuxASel;
-    // reg [1:0] MuxBSel;
-    // reg MuxCSel; //0=> AOut(RF), 1=> ARF_AOut
-    // reg [2:0] RF_OutASel;
-    // reg [2:0] RF_OutBSel;
-    // reg [3:0] RF_TSel;
-    // //end of input wires
-
-
-
-
-//    //output wires
-//     wire [7:0] AOut;//rf-muxC
-//     wire [7:0] BOut;//rf-alu
-//     wire [7:0] ALUOut;
-//     wire [3:0] ALUOutFlag;
-//     wire [7:0] ARF_AOut;//arf -muxA
-//     wire [7:0] Address;//arf- memory adress
-//     wire [7:0] MemoryOut; //memory - IR- muxA
-//     wire [7:0] MuxAOut; //muxA- rf
-//     wire [7:0] MuxBOut;//muxB-arf
-//     wire [7:0] MuxCOut;//muxC-alu
-//     wire [15:0] IROut; //direct IR output
-//     //end of output wires
-//     //end of wires for ALU_system
-
-
-
-
-
-  
-
-    //not sure
-    // always @(*) begin
-    //     if((ARF_RegSel==4'b0001) && (ARF_FunSel==2'b11) || (timing_signal==4'b1111))begin
-    //         ins_opcode<= #5 IROut[15:12];
-    //     end
-    // end
-
-
-    
-    
 
     //figure 2 mode: (if adressing mode is N/A from the table)
     wire[3:0] ins_dstreg = IROut[11:8];
     wire [3:0] ins_sreg1= IROut[7:4];
     wire [3:0] ins_sreg2= IROut[3:0];
 
-    //figure 1 mode: (if adressing mode is IM, D in the table)
 
+    //figure 1 mode: (if adressing mode is IM, D in the table)
     wire ins_addressing_mode =IROut[10];
     wire [1:0] ins_rsel= IROut[9:8];
     wire [7:0] ins_adress= IROut[7:0];
@@ -716,57 +644,14 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
      RF_TSel,AOut, BOut, ALUOut, ALUOutFlag, ARF_AOut, Address, MemoryOut,  MuxAOut,  MuxBOut, MuxCOut,IROut 
     );
 
-      
-    // ********** This statments will be used later for output 
-        // begin
-        //     if (ins_dstreg[2]==1'b0)//write to rf
-        //     begin 
-        //         case (ins_dstreg[1:0]) //which register will be used
-        //             2'b00: //R1
-        //                 RF_RSel<= 4'b1000;
-            
-        //             2'b01: //R2
-        //                 RF_RSel<= 4'b0100;
-
-        //             2'b10: //R3
-        //                 RF_RSel<= 4'b0010;
-
-        //             2'b11: //R4
-        //                 RF_RSel<= 4'b0001;
-                    
-        //         endcase
-        //         RF_FunSel=2'b01; //open to load
-
-        //     end
-        //     else begin//write to arf 
-                    
-        //         case (ins_dstreg[1:0]) //which register will be used
-        //             2'b00: //SP
-        //                 ARF_RegSel<= 4'b0100;
-            
-        //             2'b01: //AR
-        //                 ARF_RegSel<= 4'b1000;
-
-        //             2'b10: //PC
-        //                 ARF_RegSel<= 4'b0001;
-
-        //             2'b11: //PC
-        //                 ARF_RegSel<= 4'b0001;
-                    
-        //         endcase
-        //         ARF_FunSel=2'b01; //open to load
-
-        //      end 
-        
-        // end
-
 
     reg delay;
 
-    //make everything 0
+    
     initial begin
         Mem_WR<=0;
-        
+
+        //make everything 0 initally
         ARF_FunSel<=2'b00;
         RF_FunSel<=2'b00;
         RF_RSel<=4'b1111;
@@ -774,12 +659,6 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         RF_TSel<=4'b1111;
         reset_timing_signal<=1;
         delay<=1;
-
-        // ARF_OutCSel<=2'b11;
-        // ARF_OutDSel<=2'b11;
-        // RF_OutASel<=3'b111;
-        // RF_OutBSel<=3'b111;
-        
         #5;
         RF_RSel<=4'b0000;
         ARF_RegSel<=4'b0000;
@@ -810,11 +689,11 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
  
 
     //operations
-    always @(*) begin  //registers have internal clock mechanisms, don't implement yours
+    always @(*) begin  //registers have internal clock mechanisms, so not put in here
         Mem_CS<=0;
         ins_opcode<=IROut[15:12];
-        //opcode and timing signal condtions
-        //don't forget to count from 0
+    
+
         if (
 
             ((ins_opcode == 4'h0 )&& (timing_signal == 4'b0110 ))||
@@ -838,14 +717,10 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
              reset_timing_signal <= 1'b1; //counter is zeroed.
         end 
 
-        // if((reset_timing_signal==1'b1) ||  (timing_signal==4'b1111))begin
-        //     ins_opcode_for_reset<= #10 ins_opcode;
-        // end
-        
-        // ins_opcode<= #5 IROut[15:12];
         IR_Enable<=0;
 
 
+        //opcode and timing signal condtions
         if(timing_signal==4'b0000) begin //start of the fetch cycle 
             //IR(7-0)<-M[PC]
             ARF_OutDSel<=2'b 11; //PC will be given as adress to memory
@@ -894,20 +769,6 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
   
             if ((ins_opcode == 4'h9) || (ins_opcode == 4'hA) || (ins_opcode == 4'hC) || (ins_opcode == 4'hD) || (ins_opcode == 4'hE)|| (ins_opcode == 4'hF)) //in these opcodes figure 1 order will be used
             begin 
-                //selection of AR or M[AR] not decided in here, it varies a lot depending on opcode, 
-                //so in the opcode address mode selection will be made.
-                //in here AR<-IR(7-0) operation made
-                //also rsel selection in here also depends on the state (being input or output), so they will also be considered in opcodes
-
-
-                //NORMALLY This operations should be done as below prevously, but depending on the operation of these 4 opcode, 
-                //AR value may not be needed to be updated, so you will do it on the opcodes   EMRE************************* 
-
-
-                // MuxBSel<=2'b10; //IR(7-0) will go to ARF
-                // ARF_RegSel<=4'b1000; // select only AR
-                // ARF_FunSel<=2'b01; //load 
-
                 if(ins_opcode == 4'h9) begin
                     IR_Enable<=0;
                     MuxBSel<=2'b10; //IR(7-0) will go to ARF
@@ -1777,48 +1638,6 @@ module Control_Unit_Combined_With_ALU_System (input Clock, /*input reset_timing,
         end
 
         
-        // if (
-
-        //     ((ins_opcode == 4'h0 )&& (timing_signal == 4'b0110 ))||
-        //     ((ins_opcode == 4'h1 )&& (timing_signal == 4'b0110  ))||
-        //     ((ins_opcode == 4'h2 )&& (timing_signal == 4'b0110  ))||
-        //     ((ins_opcode == 4'h3 )&& (timing_signal == 4'b0110  ))||
-        //     ((ins_opcode == 4'h4 )&& (timing_signal == 4'b0110  ))||
-        //     ((ins_opcode == 4'h5 )&& (timing_signal == 4'b0110 ))||
-        //     ((ins_opcode == 4'h6 )&& (timing_signal == 4'b0110 ))||
-        //     ((ins_opcode == 4'h7 )&& (timing_signal == 4'b1000 ))||
-        //     ((ins_opcode == 4'h8 )&& (timing_signal == 4'b1000  ))||
-        //     ((ins_opcode == 4'h9) && (timing_signal == 4'b0100))||
-        //     ((ins_opcode == 4'hA )&& (timing_signal == 4'b0100  ))||
-        //     ((ins_opcode == 4'hB )&& (timing_signal == 4'b0110 ))||
-        //     ((ins_opcode == 4'hC )&& (timing_signal == 4'b0100 ))||
-        //     ((ins_opcode == 4'hD )&& (timing_signal == 4'b0100 ))||
-        //     ((ins_opcode == 4'hE )&& (timing_signal == 4'b0101))||
-        //     ((ins_opcode == 4'hF )&& (timing_signal == 4'b0101 ))
-            
-        //  ) begin
-        //      reset_timing_signal <= 1'b1; //counter is zeroed.
-        // end 
-
-
-
-
-
-
-        //********************************************************************************************************
-        //DO NOT FORGET TO REMOVE SPECIFCATIONS (LIKE MAKE regsel=0, OR CLOSE WRITING TO MEMORY) FROM MEMORY AND REGISTERS AT THE END,
-        //OTHERWISE NEW OPERATIONS MAY OVERWRITE NECESSARY CONTENT
-
-        // if (1)begin     //place will be reconsidered !!!!!!!!!!
-
-            
-        //     ARF_RegSel<= #2 4'b0000; //making sure ARF_RegSel deactiveted for unintended writings
-        //     reset_timing_signal<= #2 0;//be sure that timing signal doesn't reset in every cycle
-        //     IR_Enable<= #2 0; 
-        //     RF_RSel<= #2 4'b0000;
-        //     RF_TSel<= #2 4'b0000;//making sure RF_TSel deactiveted for unintended writings
-
-        // end
     end
 
 endmodule
