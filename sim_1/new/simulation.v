@@ -338,7 +338,7 @@ module Project2Test();
     reg [7:0] T;
     always 
     begin
-        Clock = 1; #5; Clock = 0; #5; // 10ns period
+        Clock = 0; #5; Clock = 1; #5; // 10ns period
     end
     CPUSystem _CPUSystem( 
             .Clock(Clock),
