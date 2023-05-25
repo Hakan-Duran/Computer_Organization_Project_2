@@ -27,7 +27,7 @@
 \vspace{0.5cm}
 \textbf{\Large{COMPUTER ENGINEERING DEPARTMENT}}\\
 \vspace{2cm}
-\textbf{\Large{BLG 222E\\ Computer Organization \\ Project 1}}\\
+\textbf{\Large{BLG 222E\\ Computer Organization \\ Project 2}}\\
 \vspace{2.8cm}
 \begin{table}[ht]
 \centering
@@ -197,31 +197,31 @@ of SP is incremented using the ARF registers increment operation.
     Instructions without address references have four seperate fields whose functionalities differ. Each one has 4 bits. Opcode determines which operation
 will be carrying out. DSTREG means destination register, SREG1 and SREG2 are source registers. There are 10 instruction types.
 \subsubsection{AND}
-    AND operation's opcode is 0x00. It carries out by determining ALU_Funsel as 0111.
+    AND operation's opcode is 0x00. It carries out by determining ALU Funsel as 0111.
 \subsubsection{OR}
-    OR operation's opcode is 0x01. It carries out by determining ALU_Funsel as 1000.
+    OR operation's opcode is 0x01. It carries out by determining ALU Funsel as 1000.
 \subsubsection{NOT}
-    NOT operation's opcode is 0x02. It carries out by determining ALU_Funsel as 0010.
+    NOT operation's opcode is 0x02. It carries out by determining ALU Funsel as 0010.
 \subsubsection{ADD}
-    ADD operation's opcode is 0x03. It carries out by determining ALU_Funsel as 0100.
+    ADD operation's opcode is 0x03. It carries out by determining ALU Funsel as 0100.
 \subsubsection{SUB}
-    SUB operation's opcode is 0x04, it is responsible for substract operations. It carries out by determining ALU_Funsel as 0101.
+    SUB operation's opcode is 0x04, it is responsible for substract operations. It carries out by determining ALU Funsel as 0101.
 \subsubsection{LSR}
-    LSR operation's opcode is 0x05, it is responsible for logical shift right operations. It carries out by determining ALU_Funsel as 1100.
+    LSR operation's opcode is 0x05, it is responsible for logical shift right operations. It carries out by determining ALU Funsel as 1100.
 \subsubsection{LSL}
-    LSL operation's opcode is 0x06, it is responsible for logical shift left operations. It carries out by determining ALU_Funsel as 1011.
+    LSL operation's opcode is 0x06, it is responsible for logical shift left operations. It carries out by determining ALU Funsel as 1011.
 \subsubsection{INC}
-    INC operation's opcode is 0x07, it is responsible for increment operations. It carries out by determining ALU_Funsel as 0100.
+    INC operation's opcode is 0x07, it is responsible for increment operations. It carries out by determining ALU Funsel as 0100.
 It takes 3 cycles because in order to increment and then send to ALU, we should first create a register
 which has value 1. Making it takes 2 cycle, first cycle for using a temporary register which has value 0.
 Then in second cycle, we make it 0001 with incrementing and use it in ALU.
 \subsubsection{DEC}
-    DEC operation's opcode is 0x08, it is responsible for decrement operations. It carries out by determining ALU_Funsel as 0101.
+    DEC operation's opcode is 0x08, it is responsible for decrement operations. It carries out by determining ALU Funsel as 0101.
 It takes 3 cycles because in order to decrement and then send to ALU, we should first create a register
 which has value 1. Making it takes 2 cycle, first cycle for using a temporary register which has value 0.
 Then in second cycle, we make it 0001 with incrementing and use it in ALU.
 \subsubsection{MOV}
-    MOV operation's opcode is 0x0B. It carries out by determining ALU_Funsel as 0000.
+    MOV operation's opcode is 0x0B. It carries out by determining ALU Funsel as 0000.
 
 
 \section{OVERALL DESIGN PHOTO}
