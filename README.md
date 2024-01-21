@@ -7,4 +7,4 @@ Instructions are stored in the memory and with a hard-wired control system, thes
 
 [Detailed explanation of our implementations](report/main.pdf)
 
-Need to also mention that working alongside [Hakan](https://github.com/Hakan-Duran) and [Emre](https://github.com/emre-camlica) was an absolute pleasure. 
+Need to also mention that working alongside [Yusuf](https://github.com/mymermer) was an absolute pleasure. 
